@@ -1,0 +1,35 @@
+# Dependências
+node_modules/
+
+# Builds
+dist/
+build/
+*.tsbuildinfo
+
+# Variáveis de ambiente (manter apenas os modelos)
+.env
+.env.*
+!.env.example
+
+# Testes e cobertura
+coverage/
+playwright-report/
+test-results/
+blob-report/
+playwright/.cache/
+
+# Deploy
+.vercel/
+.netlify/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Editores e sistema operacional
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db

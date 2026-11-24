@@ -1,0 +1,12 @@
+# Normaliza fim de linha para LF em todos os sistemas
+* text=auto eol=lf
+
+# Arquivos binários
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.woff binary
+*.woff2 binary
