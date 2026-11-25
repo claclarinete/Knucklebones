@@ -88,12 +88,17 @@ npm test
 
 O GitHub Actions executa tudo a cada commit em Linux, macOS e Windows, e publica os relatórios como artefatos.
 
+## Produção
+
+Ainda não publicado. Os endereços entram aqui após o primeiro deploy. Veja o [guia de deploy](docs/deploy.md).
+
 ## Documentação
 
 | Documento | Conteúdo |
 |---|---|
 | [Especificação](docs/README.md) | Regras, arquitetura, fluxos, testes e deploy |
 | [Contrato do Socket.IO](docs/contrato-socket.md) | Eventos e dados trocados entre frontend e backend |
+| [Deploy](docs/deploy.md) | Publicação, variáveis, verificação e retorno de versão |
 | [Backlog](docs/backlog.md) | 75 histórias de usuário |
 | [Protótipos](docs/prototipos/) | Telas do sistema e diferenças em relação ao escopo atual |
 | [Guia de contribuição](CONTRIBUTING.md) | Issues, branches, commits, pull requests e testes |

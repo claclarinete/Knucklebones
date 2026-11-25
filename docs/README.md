@@ -224,6 +224,8 @@ As boas práticas estão em [CONTRIBUTING.md](../CONTRIBUTING.md#testes).
 | Frontend | Vercel | `VITE_API_URL` e `VITE_SOCKET_URL` apontando para o backend |
 | Backend | Render | `FRONTEND_URL` apontando para o frontend |
 
+Passo a passo em [deploy.md](deploy.md).
+
 > No plano gratuito da Render, o backend hiberna sem uso e demora cerca de um minuto para voltar. Abra o site alguns minutos antes de uma demonstração.
 
 ---
