@@ -14,5 +14,5 @@
 
 - [ ] Critérios de aceite atendidos
 - [ ] Testes adicionados ou atualizados
-- [ ] CI passando
+- [ ] Testes passando
 - [ ] Documentação atualizada, se necessário

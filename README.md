@@ -2,7 +2,7 @@
 
 Sistema web do jogo de dados **Knucklebones**, inspirado no minigame de *Cult of the Lamb*. Basta abrir o site para jogar contra outra pessoa online, contra o computador ou numa sala privada.
 
-> **Status:** em desenvolvimento. O planejamento está pronto e o código está no esqueleto inicial.
+> **Status:** em desenvolvimento. O planejamento está pronto e o código está no esqueleto inicial. O CI e a publicação em produção serão configurados depois da implementação.
 
 ## Integrantes
 

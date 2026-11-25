@@ -18,7 +18,7 @@ Todo pull request é revisado pela outra pessoa da equipe.
 2. Crie a branch dela a partir da `main` atualizada.
 3. Faça commits pequenos e frequentes.
 4. Abra um pull request para a `main` com `Closes #<número>` na descrição.
-5. Faça o merge só depois da aprovação e com o CI passando.
+5. Faça o merge só depois da aprovação e com os testes passando.
 
 Ninguém faz push direto na `main`.
 
@@ -87,7 +87,8 @@ Testes de unidade ficam ao lado do código (`arquivo.test.ts`); testes de integr
 
 - [ ] Critérios de aceitação da issue atendidos.
 - [ ] Testes cobrindo o comportamento novo.
-- [ ] CI passando em Linux, macOS e Windows, com cobertura de pelo menos 80%.
+- [ ] Testes passando localmente, com cobertura de pelo menos 80%.
+- [ ] CI passando em Linux, macOS e Windows, quando ele for configurado.
 - [ ] Revisão aprovada pela outra pessoa.
 - [ ] Documentação atualizada, se mudou evento, fluxo ou configuração.
 - [ ] Uso de IA registrado pela equipe em [docs/uso-de-ia.md](docs/uso-de-ia.md), se houve.
