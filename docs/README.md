@@ -22,9 +22,9 @@ Sistema web do jogo de dados **Knucklebones**, inspirado no minigame de *Cult of
 - Na sua vez, o jogador recebe um dado de 6 faces e o coloca em uma coluna que tenha espaço.
 - **Destruição:** todos os dados de mesmo valor na coluna correspondente do adversário são removidos.
 - **Pontuação da coluna:** soma de `valor × quantidade²` para cada valor distinto.
-  - `[4, 4, 4]` → 4 × 9 = **36**
-  - `[4, 4, 2]` → 4 × 4 + 2 × 1 = **18**
-  - `[1, 2, 3]` → 1 + 2 + 3 = **6**
+  - `[4, 4, 4]`: 4 × 9 = **36**
+  - `[4, 4, 2]`: 4 × 4 + 2 × 1 = **18**
+  - `[1, 2, 3]`: 1 + 2 + 3 = **6**
 - **Pontuação total:** soma das 3 colunas.
 - **Fim de jogo:** quando um dos tabuleiros fica cheio. Vence quem tiver mais pontos; pontuações iguais dão empate.
 
@@ -195,7 +195,7 @@ Quando um tabuleiro enche, o backend calcula o resultado e envia `game:over`. Na
 
 ## 9. Histórias de usuário
 
-O planejamento tem 75 histórias em [backlog.md](backlog.md), acompanhadas pelas [issues do GitHub](https://github.com/claclarinete/Knucklebones/issues).
+O planejamento tem 30 histórias em [backlog.md](backlog.md), acompanhadas pelas [issues do GitHub](https://github.com/claclarinete/Knucklebones/issues).
 
 ---
 
@@ -211,7 +211,7 @@ O planejamento tem 75 histórias em [backlog.md](backlog.md), acompanhadas pelas
 - **Integração:** `/health` e fluxo de partida com dois clientes Socket.IO.
 - **E2E:** partida contra o bot até o fim, fila com dois navegadores, sala por link, sala inexistente, desistência e desconexão.
 - **Dados previsíveis:** em modo de teste o backend aceita `DICE_SEED`.
-- **CI:** a cada commit, em Linux, macOS e Windows. Será configurado depois da implementação.
+- **CI:** a cada commit, em Linux, macOS e Windows. Será configurado depois da implementação, conforme [ci-cd.md](ci-cd.md).
 
 As boas práticas estão em [CONTRIBUTING.md](../CONTRIBUTING.md#testes).
 
@@ -219,7 +219,7 @@ As boas práticas estão em [CONTRIBUTING.md](../CONTRIBUTING.md#testes).
 
 ## 11. Deploy
 
-Será configurado depois da implementação.
+Será configurado depois da implementação, conforme [ci-cd.md](ci-cd.md).
 
 | Parte | Onde | Configuração |
 |---|---|---|

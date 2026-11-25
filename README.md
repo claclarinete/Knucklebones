@@ -80,7 +80,8 @@ A cobertura mínima é de **80%** e o comando falha abaixo disso. O relatório f
 |---|---|
 | [Especificação](docs/README.md) | Regras, arquitetura, fluxos, testes e deploy |
 | [Contrato do Socket.IO](docs/contrato-socket.md) | Eventos e dados trocados entre frontend e backend |
-| [Backlog](docs/backlog.md) | 75 histórias de usuário |
+| [CI/CD e deploy](docs/ci-cd.md) | Pipeline, publicação e configuração do repositório |
+| [Backlog](docs/backlog.md) | 30 histórias de usuário |
 | [Protótipos](docs/prototipos/) | Telas do sistema e diferenças em relação ao escopo atual |
 | [Guia de contribuição](CONTRIBUTING.md) | Issues, branches, commits, pull requests e testes |
 | [Registro de uso de IA](docs/uso-de-ia.md) | Preenchido pela equipe |
