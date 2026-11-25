@@ -1,6 +1,6 @@
-## User story
+## Issue
 
-<!-- Ex.: US04 — Jogar um dado. Escreva "nenhuma" se for uma tarefa técnica. -->
+<!-- Closes #<número>. Escreva "nenhuma" se for uma tarefa sem issue. -->
 
 ## O que mudou
 
@@ -14,5 +14,5 @@
 
 - [ ] Critérios de aceite atendidos
 - [ ] Testes adicionados ou atualizados
-- [ ] CI passando
+- [ ] Testes passando
 - [ ] Documentação atualizada, se necessário

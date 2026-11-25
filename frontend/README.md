@@ -16,7 +16,7 @@ cp .env.example .env   # ajuste se o backend não estiver em http://localhost:30
 
 | Variável | Descrição |
 |---|---|
-| `VITE_API_URL` | Endereço da API REST (padrão `http://localhost:3000`) |
+| `VITE_API_URL` | Endereço do backend para o `/health` (padrão `http://localhost:3000`) |
 | `VITE_SOCKET_URL` | Endereço do servidor Socket.IO (padrão `http://localhost:3000`) |
 
 ## Scripts
@@ -36,10 +36,7 @@ cp .env.example .env   # ajuste se o backend não estiver em http://localhost:30
 | Rota | Página |
 |---|---|
 | `/` | Lobby |
-| `/login` | Login |
-| `/cadastro` | Cadastro |
-| `/partida/:codigo` | Partida (também é o link de convite da sala) |
-| `/historico` | Histórico e estatísticas |
+| `/partida/:codigo` | Sala de espera e partida (também é o link de convite) |
 | `/regras` | Regras |
 
 ## Estrutura
@@ -48,8 +45,8 @@ cp .env.example .env   # ajuste se o backend não estiver em http://localhost:30
 src/
 ├── pages/        # uma página por rota
 ├── components/   # Tabuleiro, Coluna, Dado, Placar
-├── services/     # api.ts (REST) e socket.ts (Socket.IO)
-├── hooks/        # useAuth, usePartida
+├── services/     # api.ts (/health) e socket.ts (Socket.IO)
+├── hooks/        # useApelido, usePartida
 ├── config/       # leitura das variáveis de ambiente
 ├── test/         # configuração dos testes
 ├── App.tsx       # definição das rotas

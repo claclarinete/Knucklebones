@@ -1,0 +1,26 @@
+name: História de usuário
+description: Nova história para o backlog
+title: "USxx: "
+body:
+  - type: textarea
+    id: historia
+    attributes:
+      label: História
+      placeholder: Como <papel>, quero <ação>, para <benefício>.
+    validations:
+      required: true
+  - type: textarea
+    id: criterios
+    attributes:
+      label: Critérios de aceitação
+      value: "- [ ] "
+    validations:
+      required: true
+  - type: textarea
+    id: testes
+    attributes:
+      label: Testes esperados
+  - type: input
+    id: dependencias
+    attributes:
+      label: Depende de
