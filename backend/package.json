@@ -2,7 +2,7 @@
   "name": "knucklebones-backend",
   "version": "0.1.0",
   "private": true,
-  "description": "Backend do Knucklebones Online: API REST, Socket.IO, regras do jogo e bot",
+  "description": "Backend do Knucklebones Online: Socket.IO, regras do jogo, bot, salas e fila",
   "type": "module",
   "engines": {
     "node": ">=22"
@@ -14,30 +14,20 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage",
-    "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate"
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
-    "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",
-    "drizzle-orm": "^0.45.4",
     "express": "^5.3.0",
-    "jsonwebtoken": "^9.0.3",
-    "pg": "^8.23.1",
     "socket.io": "^4.8.4",
     "zod": "^4.6.7"
   },
   "devDependencies": {
-    "@electric-sql/pglite": "^0.6.0",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
-    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^26.6.6",
-    "@types/pg": "^8.23.1",
     "@types/supertest": "^7.2.1",
     "@vitest/coverage-v8": "^5.1.1",
-    "drizzle-kit": "^0.31.11",
     "supertest": "^7.3.2",
     "tsx": "^4.23.15",
     "typescript": "^7.0.2",
