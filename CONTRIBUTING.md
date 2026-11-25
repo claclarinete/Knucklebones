@@ -1,36 +1,50 @@
 # Guia de contribuição
 
-Este guia define como organizamos o trabalho no repositório. A especificação do sistema está em [docs/README.md](docs/README.md).
+A especificação do sistema está em [docs/README.md](docs/README.md).
+
+## Responsáveis
+
+| Área | Responsável |
+|---|---|
+| Backend (`backend/`) | Clarice ([@claclarinete](https://github.com/claclarinete)) |
+| Frontend (`frontend/`), CI e deploy | José ([@Josejgs1](https://github.com/Josejgs1)) |
+| Contrato do Socket.IO, testes E2E e documentação | Ambos |
+
+Todo pull request é revisado pela outra pessoa da equipe.
 
 ## Fluxo de trabalho
 
-1. Escolha uma user story (US01 a US20, em [docs/README.md](docs/README.md#10-user-stories)) ou uma tarefa técnica.
-2. Crie uma branch a partir da `main` atualizada.
-3. Faça commits pequenos e com mensagens claras.
-4. Abra um pull request para a `main` e peça revisão de pelo menos uma pessoa da equipe.
+1. Escolha uma [issue](https://github.com/claclarinete/Knucklebones/issues) do marco atual e coloque-se como responsável.
+2. Crie a branch dela a partir da `main` atualizada.
+3. Faça commits pequenos e frequentes.
+4. Abra um pull request para a `main` com `Closes #<número>` na descrição.
 5. Faça o merge só depois da aprovação e com o CI passando.
 
 Ninguém faz push direto na `main`.
 
-## Nomes de branch
+## Branches
+
+As branches são criadas por quem for trabalhar na issue, no momento em que começar. Não há criação automática.
 
 ```
-<tipo>/<us>-<descricao-curta>
+<tipo>/us<número>-<descricao-curta>
 ```
 
-Exemplos:
+Exemplos: `feat/us05-destruir-dados`, `fix/us50-coluna-cheia`, `docs/atualiza-readme`.
 
-- `feat/us01-cadastro`
-- `feat/us09-bot-facil`
-- `fix/us05-destruicao-coluna-errada`
-- `docs/atualiza-readme`
-- `chore/configura-ci`
+Para criar a branch já vinculada à issue:
 
-Quando a tarefa não pertence a uma user story, omita o número.
+```bash
+gh issue develop <número-da-issue> --name feat/us05-destruir-dados --base main --checkout
+```
+
+O número da issue no GitHub pode ser diferente do número da história (US).
+
+Depois do merge, a branch é excluída. O repositório usa a opção **Automatically delete head branches**; localmente, rode `git fetch --prune` e `git branch -d <branch>`.
 
 ## Mensagens de commit
 
-Seguimos o padrão [Conventional Commits](https://www.conventionalcommits.org/pt-br/), com a descrição em português:
+Seguimos o [Conventional Commits](https://www.conventionalcommits.org/pt-br/), com a descrição em português:
 
 ```
 <tipo>(<escopo opcional>): <descrição no imperativo>
@@ -47,42 +61,45 @@ Seguimos o padrão [Conventional Commits](https://www.conventionalcommits.org/pt
 | `chore` | configuração, dependências, scripts |
 | `ci` | mudanças no GitHub Actions |
 
-Escopos sugeridos: `frontend`, `backend`, `game`, `auth`, `rooms`, `matches`, `db`, `e2e`.
+Escopos sugeridos: `frontend`, `backend`, `game`, `bot`, `rooms`, `queue`, `e2e`, `deploy`.
 
-Exemplos:
-
-```
-feat(game): calcula pontuação da coluna
-test(game): cobre destruição de dados iguais
-fix(rooms): impede terceiro jogador de entrar na sala
-docs: adiciona protótipo da tela de histórico
-```
+O projeto precisa de pelo menos **50 commits**. Por isso o merge dos pull requests é feito com **merge commit**, sem *squash*.
 
 ## Pull requests
 
 - Título no mesmo padrão dos commits.
-- Na descrição, informe a user story relacionada, o que mudou e como testar. O modelo em [.github/pull_request_template.md](.github/pull_request_template.md) é carregado automaticamente.
-- Mantenha os PRs pequenos: um PR por user story ou por parte dela.
+- Use o [modelo](.github/pull_request_template.md), carregado automaticamente.
+- Um pull request por história, sempre que possível.
+
+## Testes
+
+- Testar pela **API pública** do módulo ou componente, não por detalhes internos.
+- Testar **comportamento**: o que entra e o que se observa.
+- Dar **nomes** que descrevam o comportamento esperado, em português.
+- Um teste verifica **uma coisa**.
+- Sem `if` ou laços com lógica dentro do teste; para vários casos, use `it.each`.
+- Testes independentes entre si, sem depender de ordem, rede externa ou sorte (use semente fixa e relógio simulado).
+- Nos testes E2E, localizar elementos por papel e texto acessível, sem esperas fixas.
+
+Testes de unidade ficam ao lado do código (`arquivo.test.ts`); testes de integração do backend ficam em `backend/tests/`.
 
 ## Definição de pronto
 
-Uma tarefa está pronta quando:
-
-- [ ] Os critérios de aceitação da user story foram atendidos.
-- [ ] Há testes cobrindo o comportamento novo (unidade, integração ou E2E, conforme o caso).
-- [ ] O CI passa em Linux, macOS e Windows, com cobertura de pelo menos 80%.
-- [ ] O código foi revisado e aprovado por outra pessoa da equipe.
-- [ ] A documentação foi atualizada, se a mudança alterou API, eventos, modelo de dados ou fluxos.
-- [ ] O uso de IA na tarefa, se houve, foi registrado em [docs/uso-de-ia.md](docs/uso-de-ia.md).
+- [ ] Critérios de aceitação da issue atendidos.
+- [ ] Testes cobrindo o comportamento novo.
+- [ ] CI passando em Linux, macOS e Windows, com cobertura de pelo menos 80%.
+- [ ] Revisão aprovada pela outra pessoa.
+- [ ] Documentação atualizada, se mudou evento, fluxo ou configuração.
+- [ ] Uso de IA registrado pela equipe em [docs/uso-de-ia.md](docs/uso-de-ia.md), se houve.
 
 ## Regras do código
 
-- As regras do jogo ficam em `backend/src/game/`, como código puro, sem acesso a banco, rede ou socket. Isso facilita os testes.
-- O frontend nunca decide o resultado de uma jogada: ele só envia a coluna escolhida e exibe o estado recebido do backend.
-- Toda entrada vinda do cliente (REST ou Socket.IO) é validada com Zod.
-- Segredos ficam em arquivos `.env`, que nunca vão para o repositório.
+- As regras do jogo ficam em `backend/src/game/`, como código puro, sem rede ou socket.
+- O frontend nunca decide o resultado de uma jogada: envia a coluna e exibe o estado recebido.
+- Toda entrada vinda do cliente é validada com Zod.
+- Arquivos `.env` nunca vão para o repositório.
 
 ## Arquivos e formatação
 
-- O [.editorconfig](.editorconfig) define codificação UTF-8, fim de linha LF e indentação de 2 espaços. Instale a extensão EditorConfig no seu editor.
-- O [.gitattributes](.gitattributes) normaliza o fim de linha para LF, evitando diferenças entre Windows, macOS e Linux.
+- O [.editorconfig](.editorconfig) define UTF-8, fim de linha LF e indentação de 2 espaços.
+- O [.gitattributes](.gitattributes) normaliza o fim de linha para LF em todos os sistemas.
