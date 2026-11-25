@@ -40,7 +40,7 @@ gh issue develop <número-da-issue> --name feat/us05-destruir-dados --base main 
 
 O número da issue no GitHub pode ser diferente do número da história (US).
 
-Depois do merge, a branch é excluída. O repositório usa a opção **Automatically delete head branches**; localmente, rode `git fetch --prune` e `git branch -d <branch>`.
+Depois do merge, a branch deve ser excluída. Com a opção **Automatically delete head branches** ligada, o GitHub faz isso sozinho; sem ela, use o botão **Delete branch** no pull request. Em seguida, localmente, rode `git fetch --prune` e `git branch -d <branch>`.
 
 ## Mensagens de commit
 

@@ -26,35 +26,35 @@ interface PlayerInfo {
 }
 ```
 
-## Cliente → Servidor
+## Do cliente para o servidor
 
 | Evento | Dados | Efeito |
 |---|---|---|
 | `queue:join` | `{ nickname?: string }` | Entra na fila |
-| `queue:leave` | — | Sai da fila |
+| `queue:leave` | nenhum | Sai da fila |
 | `room:create` | `{ mode: 'online', nickname? }` ou `{ mode: 'bot', difficulty, nickname? }` | Cria sala privada ou partida contra o bot |
 | `room:join` | `{ code: string, nickname? }` | Entra numa sala |
-| `room:cancel` | — | O criador cancela a sala em espera |
+| `room:cancel` | nenhum | O criador cancela a sala em espera |
 | `game:move` | `{ column: Column }` | Joga o dado da vez |
-| `game:forfeit` | — | Desiste |
+| `game:forfeit` | nenhum | Desiste |
 | `game:rejoin` | `{ code: string, playerToken: string }` | Retoma uma partida |
-| `game:rematch` | — | Pede ou aceita revanche |
+| `game:rematch` | nenhum | Pede ou aceita revanche |
 
-## Servidor → Cliente
+## Do servidor para o cliente
 
 | Evento | Dados | Quando |
 |---|---|---|
-| `queue:waiting` | — | Entrou na fila |
+| `queue:waiting` | nenhum | Entrou na fila |
 | `room:created` | `{ code, playerToken }` | Sala privada criada |
 | `room:error` | `{ reason }` | Falha ao entrar ou retomar |
 | `game:start` | `{ code, playerToken, you: PlayerId, players: Record<PlayerId, PlayerInfo>, state }` | Partida começou ou foi retomada |
 | `game:state` | `{ state }` | O estado mudou |
 | `game:error` | `{ reason }` | Pedido recusado, só para quem enviou |
 | `game:over` | `{ winner: PlayerId \| 'draw', scores, reason }` | Fim da partida |
-| `game:rematch-requested` | — | O adversário pediu revanche |
+| `game:rematch-requested` | nenhum | O adversário pediu revanche |
 | `opponent:disconnected` | `{ timeoutSeconds: 60 }` | O adversário caiu |
-| `opponent:reconnected` | — | O adversário voltou |
-| `opponent:left` | — | O adversário saiu depois do fim |
+| `opponent:reconnected` | nenhum | O adversário voltou |
+| `opponent:left` | nenhum | O adversário saiu depois do fim |
 
 ## Motivos
 
