@@ -57,4 +57,4 @@ Os testes ficam ao lado do código (`arquivo.test.tsx`).
 
 ## Deploy
 
-O `vercel.json` (Vercel) e o `public/_redirects` (Netlify) redirecionam todas as rotas para o `index.html`, para que links como `/partida/K7P2QX` funcionem ao abrir direto no navegador. Configure `VITE_API_URL` e `VITE_SOCKET_URL` no serviço de deploy apontando para o backend.
+O `vercel.json` redireciona todas as rotas para o `index.html`, para que links como `/partida/K7P2QX` funcionem ao abrir direto no navegador. Veja o passo a passo em [../docs/deploy.md](../docs/deploy.md).
