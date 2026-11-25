@@ -8,7 +8,7 @@
 | Frontend | US31 a US63 (33) | José |
 | Infra, qualidade e deploy | US64 a US75 (12) | José |
 
-**Marcos:** M1 Fundação · M2 Contra o bot · M3 Online · M4 Polimento
+**Marcos:** M1 Fundação · M2 Contra o bot · M3 Online · M4 Polimento e entrega
 
 ## Backend
 
@@ -307,7 +307,7 @@ Como jogador, quero voltar à partida depois de cair, para continuar de onde par
 
 #### US30 — Combinar revanche
 
-Prioridade Baixa · M4 Polimento
+Prioridade Baixa · M4 Polimento e entrega
 
 Como jogador, quero jogar de novo com o mesmo adversário, para tentar a vitória outra vez.
 
@@ -543,7 +543,7 @@ Como jogador, quero ver combinações destacadas e uma legenda, para entender os
 
 #### US54 — Pré-visualizar a destruição
 
-Prioridade Baixa · M4 Polimento
+Prioridade Baixa · M4 Polimento e entrega
 
 Como jogador, quero ver quais dados serão destruídos antes de jogar, para escolher melhor.
 
@@ -552,7 +552,7 @@ Como jogador, quero ver quais dados serão destruídos antes de jogar, para esco
 
 #### US55 — Animar rolagem e destruição
 
-Prioridade Baixa · M4 Polimento
+Prioridade Baixa · M4 Polimento e entrega
 
 Como jogador, quero perceber o dado rolando e sendo destruído, para acompanhar o que aconteceu.
 
@@ -579,7 +579,7 @@ Como jogador, quero ver vitória, derrota ou empate com o placar, para saber o r
 
 #### US58 — Pedir e aceitar revanche
 
-Prioridade Baixa · M4 Polimento
+Prioridade Baixa · M4 Polimento e entrega
 
 Como jogador, quero propor ou aceitar uma revanche, para jogar novamente.
 
@@ -629,7 +629,7 @@ Como visitante, quero ler as regras com exemplos, para aprender a jogar.
 
 #### US63 — Permitir uso por teclado e leitor de tela
 
-Prioridade Média · M4 Polimento
+Prioridade Média · M4 Polimento e entrega
 
 Como jogador, quero jogar sem mouse e com leitor de tela, para ter acesso ao jogo.
 
@@ -643,7 +643,7 @@ Como jogador, quero jogar sem mouse e com leitor de tela, para ter acesso ao jog
 
 #### US64 — Rodar o CI em três sistemas
 
-Prioridade Alta · M1 Fundação
+Prioridade Alta · M4 Polimento e entrega
 
 Como equipe de desenvolvimento, quero executar verificações a cada commit em Linux, macOS e Windows, para detectar problemas cedo.
 
@@ -652,7 +652,7 @@ Como equipe de desenvolvimento, quero executar verificações a cada commit em L
 
 #### US65 — Exigir cobertura de pelo menos 80%
 
-Prioridade Alta · M1 Fundação
+Prioridade Alta · M4 Polimento e entrega
 
 Como equipe de desenvolvimento, quero medir a cobertura no CI, para manter a qualidade exigida.
 
@@ -668,7 +668,7 @@ Prioridade Alta · M1 Fundação
 Como equipe de desenvolvimento, quero ter a base dos testes E2E, para escrever cenários completos.
 
 - A configuração sobe backend e frontend.
-- Um teste de fumaça roda no CI.
+- Um teste de fumaça passa localmente.
 
 #### US67 — E2E de partida contra o bot até o fim
 
@@ -719,7 +719,7 @@ Como equipe de desenvolvimento, quero testar o encerramento antecipado, para gar
 
 #### US72 — Publicar o frontend
 
-Prioridade Alta · M1 Fundação
+Prioridade Alta · M4 Polimento e entrega
 
 Como visitante, quero acessar o jogo por um endereço público, para jogar sem instalar nada.
 
@@ -729,7 +729,7 @@ Como visitante, quero acessar o jogo por um endereço público, para jogar sem i
 
 #### US73 — Publicar o backend
 
-Prioridade Alta · M1 Fundação
+Prioridade Alta · M4 Polimento e entrega
 
 Como jogador, quero que o servidor esteja disponível na internet, para jogar online.
 
@@ -739,7 +739,7 @@ Como jogador, quero que o servidor esteja disponível na internet, para jogar on
 
 #### US74 — Verificar a produção automaticamente
 
-Prioridade Média · M1 Fundação
+Prioridade Média · M4 Polimento e entrega
 
 Como equipe de desenvolvimento, quero checar periodicamente os endereços publicados, para saber quando algo quebrar.
 
@@ -748,7 +748,7 @@ Como equipe de desenvolvimento, quero checar periodicamente os endereços public
 
 #### US75 — Finalizar README e protótipos
 
-Prioridade Média · M4 Polimento
+Prioridade Média · M4 Polimento e entrega
 
 Como equipe de desenvolvimento, quero entregar a documentação atualizada, para atender aos requisitos da disciplina.
 
