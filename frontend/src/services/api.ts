@@ -11,18 +11,16 @@ export class ApiError extends Error {
 }
 
 export interface ApiRequestOptions extends Omit<RequestInit, 'body'> {
-  token?: string;
   body?: unknown;
 }
 
 export async function apiFetch<T>(path: string, options: ApiRequestOptions = {}): Promise<T> {
-  const { token, body, headers, ...init } = options;
+  const { body, headers, ...init } = options;
 
   const response = await fetch(`${env.apiUrl}${path}`, {
     ...init,
     headers: {
       ...(body !== undefined && { 'Content-Type': 'application/json' }),
-      ...(token && { Authorization: `Bearer ${token}` }),
       ...headers,
     },
     body: body === undefined ? undefined : JSON.stringify(body),

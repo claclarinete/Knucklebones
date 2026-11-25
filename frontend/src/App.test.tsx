@@ -14,9 +14,6 @@ function renderAt(path: string) {
 describe('rotas', () => {
   it.each([
     ['/', 'Lobby'],
-    ['/login', 'Login'],
-    ['/cadastro', 'Cadastro'],
-    ['/historico', 'Histórico e estatísticas'],
     ['/regras', 'Regras'],
   ])('%s mostra a página %s', (path, title) => {
     renderAt(path);
