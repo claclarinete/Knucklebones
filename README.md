@@ -1,5 +1,7 @@
 # Knucklebones Online
 
+[![CI](https://github.com/claclarinete/Knucklebones/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/claclarinete/Knucklebones/actions/workflows/ci.yml)
+
 Sistema web do jogo de dados **Knucklebones**, inspirado no minigame de *Cult of the Lamb*. Basta abrir o site para jogar contra outra pessoa online, contra o computador ou numa sala privada.
 
 > **Status:** em desenvolvimento. O planejamento está pronto e o código está no esqueleto inicial.
@@ -73,6 +75,18 @@ npm run test:coverage    # os mesmos testes, com relatório de cobertura
 ```
 
 A cobertura mínima é de **80%** e o comando falha abaixo disso. O relatório fica em `coverage/`.
+
+Os testes de ponta a ponta precisam das dependências dos três projetos. As portas 3000 e 5173 devem estar livres, ou já servindo este projeto.
+
+```bash
+cd backend && npm install
+cd ../frontend && npm install
+cd ../e2e && npm install
+npx playwright install chromium   # apenas na primeira vez
+npm test
+```
+
+O GitHub Actions executa tudo a cada commit em Linux, macOS e Windows, e publica os relatórios como artefatos.
 
 ## Documentação
 
