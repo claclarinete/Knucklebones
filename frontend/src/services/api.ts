@@ -34,6 +34,6 @@ export async function apiFetch<T>(path: string, options: ApiRequestOptions = {})
   return (await response.json()) as T;
 }
 
-export function getHealth() {
-  return apiFetch<{ status: string }>('/health');
+export function getHealth(signal?: AbortSignal) {
+  return apiFetch<{ status: string }>('/health', { signal });
 }

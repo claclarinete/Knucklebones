@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { Socket } from 'socket.io-client';
 import { MemoryRouter } from 'react-router';
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { App } from './App';
 import { SocketContext } from './services/SocketContext';
 import { criarSocketFalso } from './test/socketFalso';
@@ -18,6 +18,15 @@ function renderAt(path: string) {
 }
 
 describe('rotas', () => {
+  beforeEach(() => vi.stubGlobal('fetch', vi.fn().mockResolvedValue(Response.json({ status: 'ok' }))));
+  afterEach(() => vi.unstubAllGlobals());
+
+  it('consulta a saúde do servidor ao abrir o site', () => {
+    renderAt('/regras');
+
+    expect(fetch).toHaveBeenCalledWith(expect.stringMatching(/\/health$/), expect.anything());
+  });
+
   it.each([
     ['/', 'Olá, visitante!'],
     ['/regras', 'Como jogar'],

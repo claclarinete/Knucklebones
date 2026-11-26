@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { Route, Routes, useLocation } from 'react-router';
 import { BarraSuperior } from './components/BarraSuperior';
 import { Cenario } from './components/Cenario';
+import { EstadoDoServidor } from './components/EstadoDoServidor';
 import { Lobby } from './pages/Lobby';
 import { NaoEncontrada } from './pages/NaoEncontrada';
 import { Partida } from './pages/Partida';
@@ -19,6 +20,7 @@ export function App() {
     <>
       <Cenario />
       <BarraSuperior />
+      <EstadoDoServidor />
       <Routes>
         <Route path="/" element={<Lobby />} />
         <Route path="/partida/:codigo" element={<Partida />} />
