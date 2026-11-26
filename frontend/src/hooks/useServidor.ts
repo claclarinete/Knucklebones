@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
-import { getHealth } from '../services/api';
+import { useContext, useEffect, useState } from 'react';
+import { consultarServidor } from '../services/servidor';
+import { SocketContext } from '../services/SocketContext';
 
 export type EstadoDaApi = 'consultando' | 'demorando' | 'indisponivel' | 'online';
 
@@ -10,8 +11,9 @@ export const INTERVALO_DE_REPETICAO = 5_000;
 /** O plano gratuito da hospedagem leva cerca de um minuto para acordar. */
 export const PRAZO_DA_CONSULTA = 75_000;
 
-/** Consulta o /health e permite tentar de novo. */
+/** Verifica se o servidor responde e permite tentar de novo. */
 export function useServidor() {
+  const socket = useContext(SocketContext);
   const [estado, setEstado] = useState<EstadoDaApi>('consultando');
   const [tentativa, setTentativa] = useState(0);
 
@@ -26,7 +28,7 @@ export function useServidor() {
       clearTimeout(prazo);
       setEstado(novo);
     };
-    getHealth(controle.signal).then(
+    consultarServidor(socket, controle.signal).then(
       () => concluir('online'),
       () => concluir('indisponivel'),
     );
@@ -36,7 +38,7 @@ export function useServidor() {
       clearTimeout(prazo);
       controle.abort();
     };
-  }, [tentativa]);
+  }, [tentativa, socket]);
 
   // Continua consultando em segundo plano, para o aviso sair quando o servidor voltar.
   useEffect(() => {
@@ -50,7 +52,7 @@ export function useServidor() {
       espera = setTimeout(() => {
         controle = new AbortController();
         prazo = setTimeout(() => controle.abort(), PRAZO_DA_CONSULTA);
-        getHealth(controle.signal).then(
+        consultarServidor(socket, controle.signal).then(
           () => atual && setEstado('online'),
           () => {
             clearTimeout(prazo);
@@ -67,7 +69,7 @@ export function useServidor() {
       clearTimeout(prazo);
       controle?.abort();
     };
-  }, [estado]);
+  }, [estado, socket]);
 
   return {
     estado,

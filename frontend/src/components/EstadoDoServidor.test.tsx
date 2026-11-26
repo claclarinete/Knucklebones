@@ -1,10 +1,13 @@
 import { act, fireEvent, render, screen } from '@testing-library/react';
+import type { Socket } from 'socket.io-client';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   ESPERA_PARA_AVISAR,
   INTERVALO_DE_REPETICAO,
   PRAZO_DA_CONSULTA,
 } from '../hooks/useServidor';
+import { SocketContext } from '../services/SocketContext';
+import { criarSocketFalso } from '../test/socketFalso';
 import { EstadoDoServidor } from './EstadoDoServidor';
 
 const consulta = vi.fn<typeof fetch>();
@@ -15,9 +18,21 @@ const adormecido = (_url: unknown, opcoes?: RequestInit) =>
     opcoes?.signal?.addEventListener('abort', () => rejeitar(new Error('cancelada')));
   });
 
-async function abrir() {
-  render(<EstadoDoServidor />);
+/** Simula a conexão do jogo, que falha ou abre quando alguém tenta conectar. */
+function criarConexao(resultado: 'connect' | 'connect_error') {
+  const socket = criarSocketFalso(false);
+  socket.connect = vi.fn(() => queueMicrotask(() => socket.receber(resultado)));
+  return socket;
+}
+
+async function abrir(socket = criarConexao('connect_error')) {
+  render(
+    <SocketContext value={socket as unknown as Socket}>
+      <EstadoDoServidor />
+    </SocketContext>,
+  );
   await act(() => vi.advanceTimersByTimeAsync(0));
+  return socket;
 }
 const passar = (ms: number) => act(() => vi.advanceTimersByTimeAsync(ms));
 const aviso = () => screen.getByRole('status');
@@ -108,5 +123,33 @@ describe('EstadoDoServidor', () => {
     await passar(INTERVALO_DE_REPETICAO * 3);
 
     expect(consulta).toHaveBeenCalledTimes(2);
+  });
+
+  it('não avisa quando só o /health é bloqueado e a conexão do jogo abre', async () => {
+    consulta.mockRejectedValue(new TypeError('bloqueado pelo navegador'));
+
+    const socket = await abrir(criarConexao('connect'));
+
+    expect(socket.connect).toHaveBeenCalledOnce();
+    expect(aviso()).toBeEmptyDOMElement();
+    expect(repetir()).not.toBeInTheDocument();
+  });
+
+  it('não abre a conexão do jogo quando o /health responde', async () => {
+    consulta.mockImplementation(saudavel);
+
+    const socket = await abrir();
+
+    expect(socket.connect).not.toHaveBeenCalled();
+  });
+
+  it('desiste quando nem o /health nem a conexão do jogo respondem', async () => {
+    consulta.mockRejectedValue(new TypeError('sem rede'));
+    const socket = criarSocketFalso(false);
+
+    await abrir(socket);
+    await passar(PRAZO_DA_CONSULTA);
+
+    expect(aviso()).toHaveTextContent('Não foi possível falar com o servidor');
   });
 });
