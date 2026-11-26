@@ -1,0 +1,55 @@
+.dado {
+  display: grid;
+  grid-template: repeat(3, 1fr) / repeat(3, 1fr);
+  place-items: center;
+  width: var(--lado, 4.375rem);
+  height: var(--lado, 4.375rem);
+  padding: 10%;
+  background: var(--cor-dado);
+  box-shadow:
+    inset 3px 3px 0 var(--cor-dado-luz),
+    inset 0 -5px 0 var(--cor-dado-sombra),
+    0 0 0 var(--borda) var(--cor-contorno);
+}
+
+.dado__ponto {
+  width: 70%;
+  height: 70%;
+  background: var(--cor-dado-ponto);
+}
+
+.dado__ponto--1 {
+  grid-area: 1 / 1;
+}
+
+.dado__ponto--2 {
+  grid-area: 1 / 2;
+}
+
+.dado__ponto--3 {
+  grid-area: 1 / 3;
+}
+
+.dado__ponto--4 {
+  grid-area: 2 / 1;
+}
+
+.dado__ponto--5 {
+  grid-area: 2 / 2;
+}
+
+.dado__ponto--6 {
+  grid-area: 2 / 3;
+}
+
+.dado__ponto--7 {
+  grid-area: 3 / 1;
+}
+
+.dado__ponto--8 {
+  grid-area: 3 / 2;
+}
+
+.dado__ponto--9 {
+  grid-area: 3 / 3;
+}
