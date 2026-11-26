@@ -1,6 +1,6 @@
 # CI/CD e deploy
 
-A integração contínua está configurada (US26 e US27). Os testes de ponta a ponta, o deploy e a verificação de produção (US28 a US30) ainda não existem; as seções sobre eles descrevem o que será feito.
+A integração contínua está configurada (US26 e US27). O deploy (US29) está descrito no `render.yaml`. Os testes de ponta a ponta e a verificação de produção (US28 e US30) ainda não existem; as seções sobre eles descrevem o que será feito.
 
 ## Integração contínua (GitHub Actions)
 
@@ -19,37 +19,31 @@ Arquivo [`.github/workflows/ci.yml`](../.github/workflows/ci.yml), executado a c
 
 ## Entrega contínua
 
-| Parte | Serviço | Origem |
-|---|---|---|
-| Backend | [Render](https://render.com), plano gratuito | pasta `backend/`, branch `main` |
-| Frontend | [Vercel](https://vercel.com), plano Hobby | pasta `frontend/`, branch `main` |
+O [render.yaml](../render.yaml) descreve os dois serviços na [Render](https://render.com), publicados a partir da branch `main`.
 
-A dona do repositório precisa autorizar os aplicativos da Render e da Vercel no GitHub. Antes de criar o projeto na Vercel, confira se o plano gratuito publica commits de quem não é dono da conta.
+| Serviço | Tipo | Pasta | Variáveis a informar |
+|---|---|---|---|
+| `knucklebones-backend` | Serviço web, plano gratuito | `backend/` | `FRONTEND_URL` |
+| `knucklebones-frontend` | Site estático | `frontend/` | `VITE_API_URL` e `VITE_SOCKET_URL` |
 
-### Backend na Render
+O backend usa `/health` como verificação de saúde. O deploy automático acontece somente depois que os checks do commit na `main` passam.
 
-Arquivo previsto: `render.yaml` na raiz.
+### Primeira publicação
 
-| Campo | Valor |
-|---|---|
-| Diretório | `backend` |
-| Build | `npm ci --include=dev && npm run build` |
-| Início | `npm start` |
-| Verificação de saúde | `/health` |
-| Deploy automático | somente depois que os checks passarem |
-| Variáveis | `NODE_VERSION`, `NODE_ENV=production`, `FRONTEND_URL` |
+1. Criar a conta na Render entrando com o GitHub. A dona do repositório precisa autorizar o aplicativo da Render a acessá-lo.
+2. Em **New**, escolher **Blueprint** e conectar este repositório.
+3. Informar as variáveis, com os endereços previstos dos serviços, sem barra no final:
+   - `FRONTEND_URL`: `https://knucklebones-frontend.onrender.com`
+   - `VITE_API_URL` e `VITE_SOCKET_URL`: `https://knucklebones-backend.onrender.com`
+4. Aplicar e aguardar os dois deploys.
+5. Conferir os endereços reais no painel. Se algum nome já estiver em uso, a Render acrescenta um sufixo: nesse caso, corrigir as variáveis e publicar de novo.
+6. Abrir `/health` no backend, que responde `{"status":"ok"}`, e jogar no endereço do frontend.
 
-### Frontend na Vercel
+As variáveis `VITE_*` entram no build: ao alterá-las, publique o frontend de novo. O CORS do backend aceita apenas o endereço em `FRONTEND_URL`.
 
-1. Importar o repositório e definir o diretório raiz como `frontend`.
-2. Criar `VITE_API_URL` e `VITE_SOCKET_URL` com o endereço do backend.
-3. Publicar.
+### Sem autorização no repositório
 
-As variáveis `VITE_*` entram no build: ao alterá-las, publique de novo. O [vercel.json](../frontend/vercel.json) faz rotas como `/partida/K7P2QX` abrirem direto no navegador.
-
-### Ligar os dois
-
-Na Render, ajuste `FRONTEND_URL` para o endereço de produção da Vercel, sem barra no final. O CORS aceita apenas essa origem, por isso as prévias da Vercel mostram a interface, mas não falam com o backend.
+A Render também publica um repositório público informado pelo endereço, mas sem Blueprint conectado e sem deploy automático: cada serviço é criado à mão com os valores do `render.yaml` e atualizado manualmente.
 
 ## Verificação da produção
 
@@ -57,8 +51,7 @@ Arquivo previsto: `.github/workflows/smoke.yml`, diário e com disparo manual. E
 
 ## Voltar uma versão
 
-- **Render:** em **Events**, escolher um deploy anterior e usar **Rollback**.
-- **Vercel:** em **Deployments**, escolher um deploy anterior e usar **Promote to Production**.
+No painel da Render, abrir o serviço, escolher em **Events** um deploy anterior e usar **Rollback**.
 
 Depois, corrigir o problema com um pull request, para a `main` voltar a representar o que está publicado.
 
@@ -68,7 +61,7 @@ Feita por quem administra o repositório, em **Settings**:
 
 - **General:** ligar **Automatically delete head branches**, para a branch ser excluída depois do merge.
 - **General:** manter **Allow merge commits** ligado.
-- **Branches:** proteger a `main`, exigindo uma revisão e, o check `ci-ok`.
+- **Branches:** proteger a `main`, exigindo uma revisão e o check `ci-ok`.
 
 ## Limitações
 

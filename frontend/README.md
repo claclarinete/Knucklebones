@@ -57,4 +57,4 @@ Os testes ficam ao lado do código (`arquivo.test.tsx`).
 
 ## Deploy
 
-O `vercel.json` (Vercel) e o `public/_redirects` (Netlify) redirecionam todas as rotas para o `index.html`, para que links como `/partida/K7P2QX` funcionem ao abrir direto no navegador. Configure `VITE_API_URL` e `VITE_SOCKET_URL` no serviço de deploy apontando para o backend.
+Na Render, o frontend é um site estático definido no [render.yaml](../render.yaml), que redireciona todas as rotas para o `index.html`, para que links como `/partida/K7P2QX` funcionem ao abrir direto no navegador. As variáveis `VITE_API_URL` e `VITE_SOCKET_URL` apontam para o backend.

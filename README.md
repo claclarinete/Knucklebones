@@ -43,7 +43,7 @@ Cada jogador tem um tabuleiro com 3 colunas de 3 espaços. Na sua vez, você rec
 | Playwright | Testes de ponta a ponta no navegador |
 | `@vitest/coverage-v8` | Medição de cobertura |
 | GitHub Actions | CI em Linux, macOS e Windows |
-| Vercel e Render | Publicação do frontend e do backend |
+| Render | Publicação do frontend e do backend |
 
 ## Como executar localmente
 
