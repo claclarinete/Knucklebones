@@ -7,7 +7,7 @@ import type {
   SocketData,
 } from './events.js';
 import { type Client, GameManager, type GameManagerOptions } from './manager.js';
-import { gameMoveSchema, roomCreateSchema, roomJoinSchema } from './schemas.js';
+import { gameMoveSchema, queueJoinSchema, roomCreateSchema, roomJoinSchema } from './schemas.js';
 
 export type GameIo = Server<ClientToServerEvents, ServerToClientEvents, object, SocketData>;
 type GameSocket = Socket<ClientToServerEvents, ServerToClientEvents, object, SocketData>;
@@ -36,6 +36,13 @@ export function attachGameServer(io: GameIo, options: GameServerOptions): GameMa
     const client = toClient(socket);
     const roomError = () => socket.emit('room:error', { reason: 'invalid_payload' });
     const gameError = (reason: GameErrorReason) => () => socket.emit('game:error', { reason });
+
+    socket.on(
+      'queue:join',
+      validated(queueJoinSchema, roomError, ({ nickname }) => manager.joinQueue(client, nickname)),
+    );
+
+    socket.on('queue:leave', () => manager.leaveQueue(client));
 
     socket.on(
       'room:create',

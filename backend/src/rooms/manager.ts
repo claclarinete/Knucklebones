@@ -84,6 +84,8 @@ export class GameManager {
   private readonly rooms = new Map<string, Room>();
   /** Sala de cada cliente conectado que ocupa um assento. */
   private readonly roomOfClient = new Map<string, string>();
+  /** Fila online, em ordem de chegada. */
+  private readonly queue: { client: Client; nickname?: string }[] = [];
 
   constructor(options: GameManagerOptions) {
     this.rng = options.rng ?? Math.random;
@@ -102,6 +104,29 @@ export class GameManager {
       },
     });
     this.startGame(room);
+  }
+
+  /** Entra na fila: pareia com quem chegou primeiro ou espera o próximo. */
+  joinQueue(client: Client, nickname?: string) {
+    this.leave(client);
+    const opponent = this.queue.shift();
+    if (!opponent) {
+      this.queue.push({ client, nickname });
+      return client.emit('queue:waiting');
+    }
+
+    const room = this.addRoom({
+      seats: {
+        p1: this.humanSeat(opponent.client, opponent.nickname),
+        p2: this.humanSeat(client, nickname),
+      },
+    });
+    this.startGame(room);
+  }
+
+  leaveQueue(client: Client) {
+    const index = this.queue.findIndex((entry) => entry.client.id === client.id);
+    if (index >= 0) this.queue.splice(index, 1);
   }
 
   /** Cria uma sala privada e espera o convidado entrar pelo código. */
@@ -182,8 +207,9 @@ export class GameManager {
     return room.seats.p2 ? [room.seats.p1, room.seats.p2] : [room.seats.p1];
   }
 
-  /** Sai da partida atual, se houver, antes de começar outra. */
+  /** Sai da fila e da partida atual, se houver, antes de começar outra. */
   private leave(client: Client) {
+    this.leaveQueue(client);
     const found = this.seatOf(client);
     if (found) this.removeRoom(found.room);
   }
