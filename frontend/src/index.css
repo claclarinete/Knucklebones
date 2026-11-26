@@ -43,16 +43,6 @@ body {
   min-height: 100vh;
 }
 
-/* O cenário fica numa camada fixa, alinhado ao chão, em qualquer altura de página. */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  background: url('./assets/cenario.png') center bottom / cover no-repeat;
-  image-rendering: pixelated;
-}
-
 h1,
 h2,
 h3 {
