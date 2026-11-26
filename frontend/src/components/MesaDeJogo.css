@@ -109,6 +109,126 @@
   color: var(--cor-adversario);
 }
 
+/*
+ * No computador a partida cabe na janela: o tamanho do dado segue a altura disponível,
+ * e os nomes ficam ao lado dos tabuleiros.
+ */
+@media (min-width: 48.01rem) {
+  main:has(.partida) {
+    padding-block: var(--espaco-3) var(--espaco-2);
+  }
+
+  .partida {
+    row-gap: var(--espaco-4);
+  }
+
+  .mesa {
+    grid-template-columns: minmax(7rem, 11rem) auto;
+    justify-content: center;
+    align-items: center;
+    gap: var(--espaco-2) var(--espaco-3);
+  }
+
+  .mesa > .tabuleiro,
+  .mesa__divisor {
+    grid-column: 2;
+  }
+
+  /* Avatar, nome e total empilhados, para o apelido não ser espremido. */
+  .mesa > .jogador {
+    grid-column: 1;
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .mesa > .jogador .jogador__total {
+    margin: 0;
+  }
+
+  /* Cada nome divide a linha com o seu tabuleiro. */
+  .mesa > .jogador:first-child {
+    grid-row: 1;
+  }
+
+  .mesa > .jogador:last-child {
+    grid-row: 3;
+  }
+
+  .mesa .tabuleiro {
+    /* Barras, pontos e espaços ocupam 19,5rem; cada um dos dois tabuleiros mede 3,76 dados. */
+    --lado: clamp(2.25rem, calc((100vh - 19.5rem) / 7.52), 4.375rem);
+  }
+
+  .mesa .coluna-area {
+    gap: var(--espaco-2);
+  }
+
+  .partida__lateral {
+    gap: var(--espaco-4);
+  }
+
+  .partida__lateral .painel {
+    padding: var(--espaco-4) var(--espaco-3) var(--espaco-2);
+  }
+
+  .partida__lateral .painel__titulo {
+    margin-top: calc(-1 * var(--espaco-4) - 1.25rem);
+    margin-bottom: var(--espaco-2);
+  }
+
+  .partida__lateral .painel p {
+    margin-block: var(--espaco-2);
+  }
+
+  .placar th,
+  .placar td {
+    padding-block: var(--espaco-1);
+  }
+
+  .placar tbody th {
+    max-width: 6rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .legenda ul {
+    gap: var(--espaco-2);
+    font-size: 0.875rem;
+  }
+}
+
+/* Com largura de sobra, placar e legenda vão para a esquerda e nada fica abaixo da dobra. */
+@media (min-width: 64rem) {
+  .partida {
+    grid-template-columns: 15rem minmax(0, 1fr) 15rem;
+    grid-template-rows: auto auto auto 1fr;
+  }
+
+  .partida__lateral {
+    display: contents;
+  }
+
+  .partida__lateral .placar {
+    grid-area: 2 / 1;
+  }
+
+  .partida__lateral .legenda {
+    grid-area: 3 / 1;
+  }
+
+  .mesa {
+    grid-area: 2 / 2 / span 3;
+  }
+
+  /* Dado da vez, fim de partida e espera do adversário. */
+  .partida__lateral > :not(.placar, .legenda) {
+    grid-column: 3;
+    grid-row: 2 / span 3;
+    align-self: start;
+  }
+}
+
 @media (max-width: 48rem) {
   /* Compacta a tela para o dado e o seu tabuleiro aparecerem juntos no celular. */
   main:has(.partida) {

@@ -1,6 +1,10 @@
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { ESPERA_PARA_AVISAR, PRAZO_DA_CONSULTA } from '../hooks/useServidor';
+import {
+  ESPERA_PARA_AVISAR,
+  INTERVALO_DE_REPETICAO,
+  PRAZO_DA_CONSULTA,
+} from '../hooks/useServidor';
 import { EstadoDoServidor } from './EstadoDoServidor';
 
 const consulta = vi.fn<typeof fetch>();
@@ -81,5 +85,28 @@ describe('EstadoDoServidor', () => {
     expect(consulta).toHaveBeenCalledTimes(2);
     expect(aviso()).toBeEmptyDOMElement();
     expect(repetir()).not.toBeInTheDocument();
+  });
+
+  it('tira o aviso sozinho quando o servidor volta', async () => {
+    consulta.mockRejectedValue(new TypeError('sem rede'));
+    await abrir();
+    await passar(INTERVALO_DE_REPETICAO);
+    expect(aviso()).toHaveTextContent('Não foi possível falar com o servidor');
+
+    consulta.mockImplementation(saudavel);
+    await passar(INTERVALO_DE_REPETICAO);
+
+    expect(aviso()).toBeEmptyDOMElement();
+    expect(repetir()).not.toBeInTheDocument();
+  });
+
+  it('para de consultar depois que o servidor responde', async () => {
+    consulta.mockRejectedValueOnce(new TypeError('sem rede')).mockImplementation(saudavel);
+    await abrir();
+    await passar(INTERVALO_DE_REPETICAO);
+
+    await passar(INTERVALO_DE_REPETICAO * 3);
+
+    expect(consulta).toHaveBeenCalledTimes(2);
   });
 });

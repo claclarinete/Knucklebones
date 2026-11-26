@@ -5,6 +5,8 @@ export type EstadoDaApi = 'consultando' | 'demorando' | 'indisponivel' | 'online
 
 /** Depois deste tempo, a pessoa é avisada de que o servidor está demorando. */
 export const ESPERA_PARA_AVISAR = 3_000;
+/** Com o servidor indisponível, uma nova consulta é feita depois deste tempo. */
+export const INTERVALO_DE_REPETICAO = 5_000;
 /** O plano gratuito da hospedagem leva cerca de um minuto para acordar. */
 export const PRAZO_DA_CONSULTA = 75_000;
 
@@ -35,6 +37,37 @@ export function useServidor() {
       controle.abort();
     };
   }, [tentativa]);
+
+  // Continua consultando em segundo plano, para o aviso sair quando o servidor voltar.
+  useEffect(() => {
+    if (estado !== 'indisponivel') return;
+    let controle: AbortController;
+    let prazo: ReturnType<typeof setTimeout>;
+    let espera: ReturnType<typeof setTimeout>;
+    let atual = true;
+
+    function agendar() {
+      espera = setTimeout(() => {
+        controle = new AbortController();
+        prazo = setTimeout(() => controle.abort(), PRAZO_DA_CONSULTA);
+        getHealth(controle.signal).then(
+          () => atual && setEstado('online'),
+          () => {
+            clearTimeout(prazo);
+            if (atual) agendar();
+          },
+        );
+      }, INTERVALO_DE_REPETICAO);
+    }
+
+    agendar();
+    return () => {
+      atual = false;
+      clearTimeout(espera);
+      clearTimeout(prazo);
+      controle?.abort();
+    };
+  }, [estado]);
 
   return {
     estado,
