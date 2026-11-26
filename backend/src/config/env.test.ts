@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest';
 import { parseEnv } from './env.js';
 
 const valid = {
-  JWT_SECRET: 'x'.repeat(32),
   FRONTEND_URL: 'http://localhost:5173',
 };
 
@@ -18,11 +17,15 @@ describe('parseEnv', () => {
     expect(parseEnv({ ...valid, PORT: '4000' }).PORT).toBe(4000);
   });
 
-  it('rejeita JWT_SECRET curto', () => {
-    expect(() => parseEnv({ ...valid, JWT_SECRET: 'curto' })).toThrow(/JWT_SECRET/);
+  it('rejeita PORT que não é um número positivo', () => {
+    expect(() => parseEnv({ ...valid, PORT: '-1' })).toThrow(/PORT/);
+  });
+
+  it('rejeita FRONTEND_URL que não é um endereço', () => {
+    expect(() => parseEnv({ FRONTEND_URL: 'localhost' })).toThrow(/FRONTEND_URL/);
   });
 
   it('rejeita quando FRONTEND_URL está ausente', () => {
-    expect(() => parseEnv({ JWT_SECRET: valid.JWT_SECRET })).toThrow(/FRONTEND_URL/);
+    expect(() => parseEnv({})).toThrow(/FRONTEND_URL/);
   });
 });

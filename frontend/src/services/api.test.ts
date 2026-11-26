@@ -21,25 +21,22 @@ describe('apiFetch', () => {
     expect(fetchMock).toHaveBeenCalledWith('http://localhost:3000/health', expect.any(Object));
   });
 
-  it('envia o token no cabeçalho Authorization e o corpo como JSON', async () => {
+  it('envia o corpo como JSON', async () => {
     const fetchMock = mockFetch(200, {});
 
-    await apiFetch('/auth/me', { method: 'POST', token: 'abc', body: { a: 1 } });
+    await apiFetch('/health', { method: 'POST', body: { a: 1 } });
 
     const init = fetchMock.mock.calls[0]![1] as RequestInit;
-    expect(init.headers).toEqual({
-      'Content-Type': 'application/json',
-      Authorization: 'Bearer abc',
-    });
+    expect(init.headers).toEqual({ 'Content-Type': 'application/json' });
     expect(init.body).toBe('{"a":1}');
   });
 
   it('lança ApiError com a mensagem do backend', async () => {
-    mockFetch(401, { error: 'usuário ou senha inválidos' });
+    mockFetch(503, { error: 'servidor indisponível' });
 
-    const error = await apiFetch('/auth/login').catch((e: unknown) => e);
+    const error = await apiFetch('/health').catch((e: unknown) => e);
     expect(error).toBeInstanceOf(ApiError);
-    expect(error).toMatchObject({ status: 401, message: 'usuário ou senha inválidos' });
+    expect(error).toMatchObject({ status: 503, message: 'servidor indisponível' });
   });
 
   it('usa uma mensagem genérica quando a resposta de erro não é JSON', async () => {
