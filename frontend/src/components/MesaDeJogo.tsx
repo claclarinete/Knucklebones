@@ -71,6 +71,10 @@ export function MesaDeJogo({ partida }: { partida: GameStart }) {
         <p className="partida__modo">{bot ? 'Contra o bot' : 'Online'} - Sala {code}</p>
         <p role="status" className={minhaVez && !acabou && !pausada ? 'partida__vez partida__vez--minha' : 'partida__vez'}>
           {vez}
+          {/* O valor do dado entra no anúncio da mudança de turno. */}
+          {!acabou && !pausada && estado.die && (
+            <span className="so-leitor">, o dado é {estado.die}</span>
+          )}
         </p>
         {!acabou && (
           <button

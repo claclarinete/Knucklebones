@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import type { Board, Column, Die, Score } from '../types/jogo';
 import { Dado } from './Dado';
 import './Tabuleiro.css';
@@ -28,8 +29,21 @@ export function Tabuleiro({
   pontos,
   ameacado,
 }: TabuleiroProps) {
+  const raiz = useRef<HTMLDivElement>(null);
+  const ultima = useRef<number | null>(null);
+
+  // O botão desabilitado perde o foco: ao voltar a vez, devolve quem joga por teclado ao lugar.
+  useEffect(() => {
+    if (!podeJogar || ultima.current === null) return;
+    if (document.activeElement !== document.body) return;
+    const botoes = [...raiz.current!.querySelectorAll('button')];
+    const anterior = botoes[ultima.current];
+    const destino = anterior?.disabled ? botoes.find((botao) => !botao.disabled) : anterior;
+    destino?.focus({ preventScroll: true });
+  }, [podeJogar]);
+
   return (
-    <div className="tabuleiro" role="group" aria-label={nome}>
+    <div ref={raiz} className="tabuleiro" role="group" aria-label={nome}>
       {colunas.map((dados, coluna) => (
         <div
           key={coluna}
@@ -64,7 +78,10 @@ export function Tabuleiro({
                 className="coluna__jogar"
                 aria-label={`Jogar na coluna ${coluna + 1}`}
                 disabled={!podeJogar || dados.length >= ESPACOS.length}
-                onClick={() => aoJogar(coluna as Column)}
+                onClick={() => {
+                  ultima.current = coluna;
+                  aoJogar(coluna as Column);
+                }}
               />
             )}
           </div>

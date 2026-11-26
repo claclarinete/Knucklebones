@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import type { Socket } from 'socket.io-client';
 import { MemoryRouter } from 'react-router';
 import { describe, expect, it } from 'vitest';
@@ -35,5 +36,14 @@ describe('rotas', () => {
     renderAt('/nao-existe');
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Página não encontrada');
     expect(screen.getByRole('link', { name: 'Voltar para o lobby' })).toHaveAttribute('href', '/');
+  });
+
+  it('cada nova tela começa no topo', async () => {
+    renderAt('/pagina-que-nao-existe');
+    document.documentElement.scrollTop = 500;
+
+    await userEvent.click(screen.getByRole('link', { name: 'Voltar para o lobby' }));
+
+    expect(document.documentElement.scrollTop).toBe(0);
   });
 });
