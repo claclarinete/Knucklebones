@@ -4,6 +4,9 @@ export type PlayerId = 'p1' | 'p2';
 export type Column = 0 | 1 | 2;
 export type Die = 1 | 2 | 3 | 4 | 5 | 6;
 
+export const DIFFICULTIES = ['easy', 'medium', 'hard'] as const;
+export type Difficulty = (typeof DIFFICULTIES)[number];
+
 /** Cada coluna tem de 0 a 3 dados, na ordem de colocação. */
 export type Board = [Die[], Die[], Die[]];
 

@@ -4,4 +4,16 @@ export { createSeededRng, rollDie } from './dice.js';
 export { applyMove, createGame, opponentOf, type MoveError, type MoveResult } from './game.js';
 export { decideWinner, getResult, type Winner } from './result.js';
 export { scoreBoard, scoreColumn } from './score.js';
-export type { Board, Column, Die, GameState, GameStatus, PlayerId, Rng, Score } from './types.js';
+export { chooseColumn, validColumns } from './bot.js';
+export { DIFFICULTIES } from './types.js';
+export type {
+  Board,
+  Column,
+  Die,
+  Difficulty,
+  GameState,
+  GameStatus,
+  PlayerId,
+  Rng,
+  Score,
+} from './types.js';

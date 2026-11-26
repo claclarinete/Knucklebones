@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { DIFFICULTIES } from '../game/index.js';
 import { NICKNAME_MAX_LENGTH, NICKNAME_PATTERN } from './nickname.js';
 
 // Validação dos dados recebidos do cliente, conforme docs/contrato-socket.md.
@@ -14,7 +15,7 @@ export const nicknameSchema = z
   .regex(NICKNAME_PATTERN)
   .optional();
 
-export const difficultySchema = z.enum(['easy', 'medium', 'hard']);
+export const difficultySchema = z.enum(DIFFICULTIES);
 
 /** A entrada ignora maiúsculas e minúsculas. */
 export const roomCodeSchema = z
@@ -40,7 +41,6 @@ export const gameRejoinSchema = z.object({
   playerToken: z.string().min(1).max(128),
 });
 
-export type Difficulty = z.infer<typeof difficultySchema>;
 export type QueueJoinPayload = z.infer<typeof queueJoinSchema>;
 export type RoomCreatePayload = z.infer<typeof roomCreateSchema>;
 export type RoomJoinPayload = z.infer<typeof roomJoinSchema>;
