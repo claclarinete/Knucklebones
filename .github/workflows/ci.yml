@@ -1,0 +1,68 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  testes:
+    name: ${{ matrix.projeto }} (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        projeto: [backend, frontend]
+    defaults:
+      run:
+        shell: bash
+        working-directory: ${{ matrix.projeto }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: ${{ matrix.projeto }}/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint --if-present
+      - run: npm run test:coverage
+      - name: Resumir a cobertura
+        if: ${{ !cancelled() && hashFiles(format('{0}/coverage/coverage-summary.json', matrix.projeto)) != '' }}
+        env:
+          TITULO: ${{ matrix.projeto }} (${{ matrix.os }})
+        run: |
+          node -e '
+            const { total } = require("./coverage/coverage-summary.json");
+            console.log(`### Cobertura: ${process.env.TITULO}\n`);
+            console.log("| Métrica | % |\n|---|---|");
+            for (const [nome, chave] of [["Linhas", "lines"], ["Funções", "functions"], ["Ramos", "branches"], ["Instruções", "statements"]])
+              console.log(`| ${nome} | ${total[chave].pct} |`);
+          ' >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v7
+        if: ${{ !cancelled() }}
+        with:
+          name: cobertura-${{ matrix.projeto }}-${{ matrix.os }}
+          path: ${{ matrix.projeto }}/coverage
+          if-no-files-found: ignore
+      - run: npm run build
+
+  ci-ok:
+    name: ci-ok
+    if: ${{ always() }}
+    needs: [testes]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Conferir o resultado dos outros jobs
+        env:
+          TESTES: ${{ needs.testes.result }}
+        run: test "$TESTES" = success

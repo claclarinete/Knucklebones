@@ -1,8 +1,10 @@
 # Knucklebones Online
 
+[![CI](https://github.com/claclarinete/Knucklebones/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/claclarinete/Knucklebones/actions/workflows/ci.yml)
+
 Sistema web do jogo de dados **Knucklebones**, inspirado no minigame de *Cult of the Lamb*. Basta abrir o site para jogar contra outra pessoa online, contra o computador ou numa sala privada.
 
-> **Status:** em desenvolvimento. O planejamento está pronto e o código está no esqueleto inicial. O CI e a publicação em produção serão configurados depois da implementação.
+> **Status:** em desenvolvimento. A interface e a partida contra o bot funcionam; fila online e salas privadas estão em implementação. A publicação em produção ainda será feita.
 
 ## Integrantes
 
@@ -72,7 +74,9 @@ npm test                 # testes de unidade e integração
 npm run test:coverage    # os mesmos testes, com relatório de cobertura
 ```
 
-A cobertura mínima é de **80%** e o comando falha abaixo disso. O relatório fica em `coverage/`.
+A cobertura mínima é de **80%** em linhas, funções, ramos e instruções, e o comando falha abaixo disso. O relatório fica em `coverage/` (abra `coverage/index.html` no navegador).
+
+O [CI](.github/workflows/ci.yml) executa tipos, lint, testes com cobertura e build em Linux, macOS e Windows a cada commit. Em cada execução, o resumo da cobertura aparece na página do GitHub Actions e os relatórios completos ficam disponíveis como artefatos.
 
 ## Documentação
 

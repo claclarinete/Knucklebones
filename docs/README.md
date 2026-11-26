@@ -211,7 +211,7 @@ O planejamento tem 30 histórias em [backlog.md](backlog.md), acompanhadas pelas
 - **Integração:** `/health` e fluxo de partida com dois clientes Socket.IO.
 - **E2E:** partida contra o bot até o fim, fila com dois navegadores, sala por link, sala inexistente, desistência e desconexão.
 - **Dados previsíveis:** fora de produção o backend aceita `DICE_SEED`, que fixa o dado, quem começa e os sorteios do bot.
-- **CI:** a cada commit, em Linux, macOS e Windows. Será configurado depois da implementação, conforme [ci-cd.md](ci-cd.md).
+- **CI:** a cada commit, em Linux, macOS e Windows, conforme [ci-cd.md](ci-cd.md).
 
 As boas práticas estão em [CONTRIBUTING.md](../CONTRIBUTING.md#testes).
 
