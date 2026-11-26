@@ -25,6 +25,8 @@ function abrirLobby({ conectado = true } = {}) {
 }
 
 const entrarNaFila = () => userEvent.click(screen.getByRole('button', { name: 'Entrar na fila' }));
+const jogarContraBot = () =>
+  userEvent.click(screen.getByRole('button', { name: 'Jogar contra o bot' }));
 const campoApelido = () => screen.getByLabelText('Apelido (opcional)');
 
 afterEach(() => {
@@ -141,5 +143,68 @@ describe('Lobby', () => {
     act(() => socket.receber('connect'));
 
     expect(socket.enviados.filter(([evento]) => evento === 'queue:join')).toHaveLength(2);
+  });
+
+  it('oferece três dificuldades com descrição', () => {
+    abrirLobby();
+
+    const opcoes = screen.getAllByRole('radio');
+    expect(opcoes).toHaveLength(3);
+    expect(screen.getByRole('radio', { name: 'Fácil' })).toHaveAccessibleDescription(/qualquer/);
+    expect(screen.getByRole('radio', { name: 'Médio' })).toHaveAccessibleDescription(/destruir/);
+    expect(screen.getByRole('radio', { name: 'Difícil' })).toHaveAccessibleDescription(/à frente/);
+  });
+
+  it('começa com a dificuldade média selecionada', () => {
+    abrirLobby();
+
+    expect(screen.getByRole('radio', { name: 'Médio' })).toBeChecked();
+  });
+
+  it.each([
+    ['Fácil', 'easy'],
+    ['Médio', 'medium'],
+    ['Difícil', 'hard'],
+  ])('pede uma partida contra o bot no nível %s', async (nome, difficulty) => {
+    localStorage.setItem(CHAVE_APELIDO, 'Ana');
+    const { socket } = abrirLobby();
+
+    await userEvent.click(screen.getByRole('radio', { name: nome }));
+    await jogarContraBot();
+
+    expect(socket.enviados).toEqual([
+      ['room:create', { mode: 'bot', difficulty, nickname: 'Ana' }],
+    ]);
+  });
+
+  it('abre a partida contra o bot quando ela começa', async () => {
+    const { socket } = abrirLobby();
+    await jogarContraBot();
+
+    act(() => socket.receber('game:start', { code: 'B0TB0T', playerToken: 'segredo' }));
+
+    expect(screen.getByRole('heading', { name: 'Tela da partida' })).toBeInTheDocument();
+  });
+
+  it('trocar a fila pelo bot sai da fila antes de criar a partida', async () => {
+    const { socket } = abrirLobby();
+    await entrarNaFila();
+
+    await jogarContraBot();
+
+    expect(socket.enviados.map(([evento]) => evento)).toEqual([
+      'queue:join',
+      'queue:leave',
+      'room:create',
+    ]);
+  });
+
+  it('avisa quando a partida contra o bot não pode ser criada', async () => {
+    const { socket } = abrirLobby();
+    await jogarContraBot();
+
+    act(() => socket.receber('room:error', { reason: 'invalid_payload' }));
+
+    expect(screen.getByRole('alert')).toHaveTextContent('Não foi possível começar a partida');
   });
 });

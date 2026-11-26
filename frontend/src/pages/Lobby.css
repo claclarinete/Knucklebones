@@ -1,29 +1,27 @@
-.lobby h1 {
+.lobby__topo {
+  margin-bottom: var(--espaco-5);
+}
+
+.lobby__topo h1 {
   margin: 0;
   text-shadow: 0 4px 0 var(--cor-contorno);
   overflow-wrap: anywhere;
 }
 
 .lobby__chamada {
-  margin: var(--espaco-2) 0 var(--espaco-5);
+  margin: var(--espaco-2) 0 var(--espaco-4);
   font-size: 1.25rem;
   color: var(--cor-texto-suave);
 }
 
-.lobby__painel {
-  margin-top: var(--espaco-5);
-}
-
-.lobby__painel label {
+.lobby__topo label {
   display: block;
   margin-bottom: var(--espaco-2);
-  text-align: left;
   color: var(--cor-texto-suave);
 }
 
-.lobby__painel input {
-  width: 100%;
-  margin-bottom: var(--espaco-4);
+.lobby__topo input {
+  width: min(100%, 20rem);
   padding: var(--espaco-2) var(--espaco-3);
   font: 1.25rem var(--fonte-texto);
   color: var(--cor-texto);
@@ -31,21 +29,31 @@
   border: var(--borda) solid var(--cor-contorno);
 }
 
-.lobby__painel .botao {
+.lobby__paineis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+  gap: var(--espaco-5) var(--espaco-4);
+}
+
+.lobby__paineis .painel {
+  width: 100%;
+  max-width: none;
+}
+
+.lobby__paineis .botao {
   width: 100%;
   min-height: 3rem;
 }
 
 .lobby__erro {
-  margin-top: calc(-1 * var(--espaco-3));
   color: var(--cor-adversario);
 }
 
 .lobby__ampulheta {
   display: block;
-  margin: 0 auto;
   width: 1.5rem;
   height: 2.5rem;
+  margin: 0 auto;
   background: var(--cor-destaque);
   clip-path: polygon(0 0, 100% 0, 100% 10%, 60% 50%, 100% 90%, 100% 100%, 0 100%, 0 90%, 40% 50%, 0 10%);
   animation: virar 2s steps(8) infinite;

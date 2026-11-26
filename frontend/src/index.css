@@ -129,6 +129,10 @@ main {
   box-shadow: 0 0 0 var(--borda) var(--cor-contorno);
 }
 
+.painel__titulo--destaque {
+  background: var(--cor-destaque);
+}
+
 .so-leitor {
   position: absolute;
   width: 1px;
