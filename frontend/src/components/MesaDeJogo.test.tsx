@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { SocketContext } from '../services/SocketContext';
 import { criarEstado, criarPartida } from '../test/partida';
 import { criarSocketFalso } from '../test/socketFalso';
-import type { GameStart } from '../types/jogo';
+import type { GameStart, GameState } from '../types/jogo';
 import { MesaDeJogo } from './MesaDeJogo';
 
 function abrirMesa(partida: GameStart = criarPartida()) {
@@ -42,7 +42,7 @@ describe('MesaDeJogo', () => {
     abrirMesa();
 
     expect(screen.getByText('Ana (você)')).toBeInTheDocument();
-    expect(screen.getByText('Rival')).toBeInTheDocument();
+    expect(screen.getByRole('rowheader', { name: 'Rival' })).toBeInTheDocument();
   });
 
   it('identifica o bot pelo nível', () => {
@@ -52,7 +52,7 @@ describe('MesaDeJogo', () => {
       }),
     );
 
-    expect(screen.getByText('Bot difícil')).toBeInTheDocument();
+    expect(screen.getByRole('rowheader', { name: 'Bot difícil' })).toBeInTheDocument();
     expect(screen.getByText(/Contra o bot/)).toBeInTheDocument();
   });
 
@@ -133,5 +133,80 @@ describe('MesaDeJogo', () => {
 
     expect(screen.getByRole('alert')).toHaveTextContent('Essa coluna está cheia');
     expect(botao(2)).toBeEnabled();
+  });
+
+  it('mostra os pontos por coluna e o total enviados pelo servidor', () => {
+    const scores = {
+      p1: { columns: [24, 2, 9] as [number, number, number], total: 35 },
+      p2: { columns: [3, 17, 7] as [number, number, number], total: 27 },
+    };
+    abrirMesa(criarPartida({ state: criarEstado({ scores }) }));
+
+    const meu = screen.getByRole('group', { name: 'Seu tabuleiro' });
+    expect(within(meu).getByText('Pontos da coluna 1:').parentElement).toHaveTextContent('24');
+    const placar = screen.getByRole('table', { name: 'Placar' });
+    expect(within(placar).getByRole('row', { name: 'Ana 24 2 9 35' })).toBeInTheDocument();
+    expect(within(placar).getByRole('row', { name: 'Rival 3 17 7 27' })).toBeInTheDocument();
+  });
+
+  it('atualiza o placar quando o servidor envia um novo estado', () => {
+    const socket = abrirMesa();
+    const scores = {
+      p1: { columns: [4, 0, 0] as [number, number, number], total: 4 },
+      p2: { columns: [0, 0, 0] as [number, number, number], total: 0 },
+    };
+
+    act(() => socket.receber('game:state', { state: criarEstado({ scores }) }));
+
+    expect(screen.getByRole('row', { name: 'Ana 4 0 0 4' })).toBeInTheDocument();
+  });
+
+  it('destaca duplas e trios por texto, além da cor', () => {
+    abrirMesa(
+      criarPartida({
+        state: criarEstado({
+          die: 1,
+          boards: { p1: [[6, 6], [2, 2, 2], [5]], p2: [[], [], []] },
+        }),
+      }),
+    );
+
+    expect(dadosDe('Seu tabuleiro')).toEqual([
+      'Dado 6, dupla',
+      'Dado 6, dupla',
+      'Dado 2, trio',
+      'Dado 2, trio',
+      'Dado 2, trio',
+      'Dado 5',
+    ]);
+  });
+
+  const tabuleiros = {
+    p1: [[], [1, 2, 3], []],
+    p2: [[4, 4, 1], [4], [2]],
+  } satisfies GameState['boards'];
+
+  it('antecipa os dados do adversário que a jogada destruiria', () => {
+    abrirMesa(criarPartida({ state: criarEstado({ die: 4, boards: tabuleiros }) }));
+
+    // A coluna 2 está cheia para mim, então o 4 do adversário nela não corre risco.
+    expect(dadosDe('Tabuleiro do adversário')).toEqual([
+      'Dado 4, dupla, será destruído',
+      'Dado 4, dupla, será destruído',
+      'Dado 1',
+      'Dado 4',
+      'Dado 2',
+    ]);
+    expect(dadosDe('Seu tabuleiro').join()).not.toContain('destruído');
+  });
+
+  it('não antecipa destruição na vez do adversário', () => {
+    abrirMesa(
+      criarPartida({
+        state: criarEstado({ die: 4, currentPlayer: 'p2', boards: tabuleiros }),
+      }),
+    );
+
+    expect(dadosDe('Tabuleiro do adversário').join()).not.toContain('destruído');
   });
 });

@@ -76,8 +76,23 @@
   background: var(--cor-destaque);
 }
 
-.dado-da-vez {
+.partida__lateral {
+  display: grid;
+  gap: var(--espaco-5);
+}
+
+.partida__lateral .painel {
   width: 100%;
+}
+
+.jogador__total {
+  margin-left: var(--espaco-3);
+  font: 700 1.75rem var(--fonte-titulo);
+  color: var(--cor-adversario);
+}
+
+.jogador--voce .jogador__total {
+  color: var(--cor-jogador);
 }
 
 .dado-da-vez .dado {
@@ -95,7 +110,11 @@
     grid-template-columns: minmax(0, 1fr);
   }
 
-  /* No celular o dado vem antes da mesa, para ficar visível na hora de escolher. */
+  /* No celular o dado vem antes da mesa; placar e legenda ficam depois dela. */
+  .partida__lateral {
+    display: contents;
+  }
+
   .dado-da-vez {
     order: -1;
     padding-bottom: var(--espaco-3);

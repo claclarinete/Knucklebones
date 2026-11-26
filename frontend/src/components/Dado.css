@@ -1,4 +1,5 @@
 .dado {
+  position: relative;
   display: grid;
   grid-template: repeat(3, 1fr) / repeat(3, 1fr);
   place-items: center;
@@ -53,4 +54,51 @@
 
 .dado__ponto--9 {
   grid-area: 3 / 3;
+}
+
+.dado--dupla {
+  background: var(--cor-destaque);
+}
+
+.dado--trio {
+  background: var(--cor-sucesso);
+}
+
+/* Cada destaque tem também um símbolo ou borda, para não depender só da cor. */
+.dado--dupla::after,
+.dado--trio::after {
+  position: absolute;
+  right: -6px;
+  bottom: -6px;
+  padding: 0 3px;
+  /* Na fonte pixelada o sinal de vezes se confunde com o de igual. */
+  font: 700 max(0.65rem, calc(var(--lado, 4.375rem) * 0.2)) / 1.3 system-ui, sans-serif;
+  color: var(--cor-texto);
+  background: var(--cor-contorno);
+}
+
+.dado--dupla::after {
+  content: '×2';
+}
+
+.dado--trio::after {
+  content: '×3';
+}
+
+.dado--ameacado {
+  background: var(--cor-dado-ameacado);
+  outline: max(1px, calc(var(--lado, 4.375rem) * 0.04)) dashed var(--cor-texto);
+  outline-offset: calc(var(--lado, 4.375rem) * -0.08);
+}
+
+.dado--ameacado::before {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  padding: 0 4px;
+  content: '✕';
+  font-size: max(0.7rem, calc(var(--lado, 4.375rem) * 0.22));
+  line-height: 1.4;
+  color: var(--cor-texto);
+  background: var(--cor-perigo);
 }

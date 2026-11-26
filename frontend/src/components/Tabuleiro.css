@@ -19,7 +19,34 @@
 }
 
 .coluna-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espaco-3);
+}
+
+/* No tabuleiro de cima os pontos ficam acima da coluna, longe do centro da mesa. */
+.coluna-area--invertida {
+  flex-direction: column-reverse;
+}
+
+.coluna-alvo {
   position: relative;
+}
+
+.coluna__pontos {
+  min-width: 2.5rem;
+  margin: 0;
+  padding: 0 var(--espaco-2);
+  font-family: var(--fonte-titulo);
+  text-align: center;
+  color: var(--cor-barra);
+  background: var(--cor-jogador);
+  box-shadow: 0 0 0 var(--borda) var(--cor-contorno);
+}
+
+.coluna-area--invertida .coluna__pontos {
+  background: var(--cor-adversario);
 }
 
 .coluna__jogar {

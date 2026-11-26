@@ -1,0 +1,18 @@
+.legenda ul {
+  display: grid;
+  gap: var(--espaco-3);
+  margin: 0;
+  padding: 0;
+  text-align: left;
+  list-style: none;
+}
+
+.legenda li {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-3);
+}
+
+.legenda .dado {
+  --lado: 2.25rem;
+}
