@@ -3,16 +3,16 @@ import type { Socket } from 'socket.io-client';
 import { MemoryRouter } from 'react-router';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { SocketContext } from '../services/SocketContext';
+import { MesaComAvisos } from '../test/MesaComAvisos';
 import { criarPartida } from '../test/partida';
 import { criarSocketFalso } from '../test/socketFalso';
-import { MesaDeJogo } from './MesaDeJogo';
 
 function abrir() {
   const socket = criarSocketFalso();
   render(
     <SocketContext value={socket as unknown as Socket}>
       <MemoryRouter>
-        <MesaDeJogo partida={criarPartida()} />
+        <MesaComAvisos partida={criarPartida()} />
       </MemoryRouter>
     </SocketContext>,
   );

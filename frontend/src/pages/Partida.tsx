@@ -1,6 +1,8 @@
 import { Link, useParams } from 'react-router';
 import { MesaDeJogo } from '../components/MesaDeJogo';
 import { SalaDeEspera } from '../components/SalaDeEspera';
+import { useConexao } from '../hooks/useConexao';
+import { useResultado } from '../hooks/useResultado';
 import { useSala, type MotivoDeErro } from '../hooks/useSala';
 import { limparCodigo } from '../services/codigo';
 
@@ -13,6 +15,9 @@ const ERROS: Record<MotivoDeErro, string> = {
 
 function SalaDaPartida({ code }: { code: string }) {
   const { sala, cancelar } = useSala(code);
+  // Escutam desde a entrada: na retomada, os avisos chegam logo depois de game:start.
+  const conexao = useConexao();
+  const fim = useResultado();
 
   if (sala.fase === 'esperando') {
     return (
@@ -39,7 +44,7 @@ function SalaDaPartida({ code }: { code: string }) {
   if (sala.fase === 'jogando') {
     return (
       <main>
-        <MesaDeJogo partida={sala.partida} />
+        <MesaDeJogo partida={sala.partida} conexao={conexao} fim={fim} />
       </main>
     );
   }

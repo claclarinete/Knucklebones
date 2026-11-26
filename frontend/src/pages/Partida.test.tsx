@@ -2,12 +2,12 @@ import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { StrictMode } from 'react';
 import type { Socket } from 'socket.io-client';
-import { MemoryRouter, Route, Routes } from 'react-router';
+import { Link, MemoryRouter, Route, Routes } from 'react-router';
 import { afterEach, describe, expect, it } from 'vitest';
 import { CHAVE_APELIDO } from '../hooks/useApelido';
 import { CHAVE_PARTIDA, salvarPartida } from '../services/partida';
 import { SocketContext } from '../services/SocketContext';
-import { criarPartida } from '../test/partida';
+import { criarEstado, criarPartida } from '../test/partida';
 import { criarSocketFalso } from '../test/socketFalso';
 import { Partida } from './Partida';
 
@@ -19,6 +19,7 @@ function abrir({ caminho = '/partida/K7P2QX', conectado = true } = {}) {
     <StrictMode>
       <SocketContext value={socket as unknown as Socket}>
         <MemoryRouter initialEntries={[caminho]}>
+          <Link to="/">Sair pela barra</Link>
           <Routes>
             <Route path="/" element={<h1>Lobby</h1>} />
             <Route path="/partida/:codigo" element={<Partida />} />
@@ -179,5 +180,52 @@ describe('retomada', () => {
     expect(socket.enviados).toEqual([['game:rejoin', SALA]]);
     expect(screen.getByText('Sua vez')).toBeInTheDocument();
   });
+
+  // O servidor envia o aviso logo depois de game:start, antes de a mesa aparecer.
+  it('mostra a contagem quando o adversário continua fora', () => {
+    salvarPartida(SALA);
+    const socket = abrir();
+
+    act(() => {
+      socket.receber('game:start', criarPartida({ state: criarEstado({ status: 'paused' }) }));
+      socket.receber('opponent:disconnected', { timeoutSeconds: 42 });
+    });
+
+    expect(screen.getByRole('timer')).toHaveTextContent('0:42');
+  });
+
+  it('mostra o resultado quando a partida já tinha terminado', () => {
+    salvarPartida(SALA);
+    const socket = abrir();
+    const state = criarEstado({ status: 'finished', die: null });
+
+    act(() => {
+      socket.receber('game:start', criarPartida({ state }));
+      socket.receber('game:over', { winner: 'p1', scores: state.scores, reason: 'forfeit' });
+    });
+
+    expect(screen.getByRole('dialog', { name: 'Fim de jogo' })).toBeInTheDocument();
+  });
 });
 
+describe('saída da partida', () => {
+  it('desconecta ao sair da tela, para o adversário ser avisado', async () => {
+    const socket = abrir();
+    act(() => socket.receber('game:start', criarPartida()));
+    expect(socket.desconexoes).toBe(0);
+
+    await userEvent.click(screen.getByRole('link', { name: 'Sair pela barra' }));
+
+    expect(socket.desconexoes).toBe(1);
+    // O token fica salvo para a pessoa poder voltar dentro do prazo.
+    expect(sessionStorage.getItem(CHAVE_PARTIDA)).not.toBeNull();
+  });
+
+  it('mantém a conexão ao sair da sala de espera', async () => {
+    const socket = abrirComoCriador();
+
+    await userEvent.click(screen.getByRole('link', { name: 'Sair pela barra' }));
+
+    expect(socket.desconexoes).toBe(0);
+  });
+});

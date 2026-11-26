@@ -4,10 +4,10 @@ import type { Socket } from 'socket.io-client';
 import { MemoryRouter, Route, Routes } from 'react-router';
 import { describe, expect, it } from 'vitest';
 import { SocketContext } from '../services/SocketContext';
+import { MesaComAvisos } from '../test/MesaComAvisos';
 import { criarEstado, criarPartida } from '../test/partida';
 import { criarSocketFalso } from '../test/socketFalso';
 import type { GameStart, GameState } from '../types/jogo';
-import { MesaDeJogo } from './MesaDeJogo';
 
 function abrirMesa(partida: GameStart = criarPartida()) {
   const socket = criarSocketFalso();
@@ -15,7 +15,7 @@ function abrirMesa(partida: GameStart = criarPartida()) {
     <SocketContext value={socket as unknown as Socket}>
       <MemoryRouter>
         <Routes>
-          <Route path="/" element={<MesaDeJogo partida={partida} />} />
+          <Route path="/" element={<MesaComAvisos partida={partida} />} />
         </Routes>
       </MemoryRouter>
     </SocketContext>,

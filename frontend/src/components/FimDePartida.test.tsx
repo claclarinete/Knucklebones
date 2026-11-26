@@ -5,10 +5,10 @@ import { MemoryRouter, Route, Routes } from 'react-router';
 import { describe, expect, it } from 'vitest';
 import { CHAVE_PARTIDA, salvarPartida } from '../services/partida';
 import { SocketContext } from '../services/SocketContext';
+import { MesaComAvisos } from '../test/MesaComAvisos';
 import { criarEstado, criarPartida } from '../test/partida';
 import { criarSocketFalso } from '../test/socketFalso';
 import type { GameOver } from '../types/jogo';
-import { MesaDeJogo } from './MesaDeJogo';
 
 const placar = {
   p1: { columns: [20, 5, 6] as [number, number, number], total: 31 },
@@ -23,7 +23,7 @@ function terminar(mudancas: Partial<GameOver> = {}) {
       <MemoryRouter initialEntries={['/partida/K7P2QX']}>
         <Routes>
           <Route path="/" element={<h1>Lobby</h1>} />
-          <Route path="/partida/:codigo" element={<MesaDeJogo partida={criarPartida()} />} />
+          <Route path="/partida/:codigo" element={<MesaComAvisos partida={criarPartida()} />} />
         </Routes>
       </MemoryRouter>
     </SocketContext>,
