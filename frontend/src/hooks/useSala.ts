@@ -16,7 +16,6 @@ export type Sala =
 
 interface EstadoDaNavegacao {
   partida?: GameStart;
-  criada?: boolean;
 }
 
 /** Acompanha a sala do endereço: entra, retoma ou espera o convidado. */
@@ -29,7 +28,8 @@ export function useSala(code: string) {
   const [sala, setSala] = useState<Sala>(() => {
     if (!codigoCompleto(code)) return { fase: 'erro', motivo: 'not_found' };
     if (estado.partida?.code === code) return { fase: 'jogando', partida: estado.partida };
-    return { fase: estado.criada && lerPartida(code) ? 'esperando' : 'entrando' };
+    // A marca fica no sessionStorage para a espera sobreviver a uma recarga.
+    return { fase: lerPartida(code)?.aguardando ? 'esperando' : 'entrando' };
   });
   const jaPediu = useRef(false);
   const precisaEntrar = sala.fase === 'entrando';
@@ -47,12 +47,12 @@ export function useSala(code: string) {
     const pedir = () => {
       jaPediu.current = true;
       const salva = lerPartida(code);
-      if (salva) socket.emit('game:rejoin', salva);
+      if (salva) socket.emit('game:rejoin', { code, playerToken: salva.playerToken });
       else socket.emit('room:join', apelido ? { code, nickname: apelido } : { code });
     };
     const aoComecar = (partida: GameStart) => {
       if (partida.code !== code) return;
-      salvarPartida(partida);
+      salvarPartida({ code, playerToken: partida.playerToken });
       setSala({ fase: 'jogando', partida });
     };
     const aoFalhar = ({ reason }: { reason: MotivoDeErro }) => {
