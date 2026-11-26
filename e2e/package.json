@@ -1,0 +1,21 @@
+{
+  "name": "knucklebones-e2e",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Testes de ponta a ponta do Knucklebones Online com Playwright",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "report": "playwright show-report",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.65.1",
+    "@types/node": "^24.19.4",
+    "typescript": "^7.0.2"
+  }
+}
