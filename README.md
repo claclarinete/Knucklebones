@@ -1,10 +1,18 @@
 # Knucklebones Online
 
 [![CI](https://github.com/claclarinete/Knucklebones/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/claclarinete/Knucklebones/actions/workflows/ci.yml)
+[![Verificação de produção](https://github.com/claclarinete/Knucklebones/actions/workflows/smoke.yml/badge.svg?branch=main)](https://github.com/claclarinete/Knucklebones/actions/workflows/smoke.yml)
 
 Sistema web do jogo de dados **Knucklebones**, inspirado no minigame de *Cult of the Lamb*. Basta abrir o site para jogar contra outra pessoa online, contra o computador ou numa sala privada.
 
-> **Status:** em desenvolvimento. A interface e a partida contra o bot funcionam; fila online e salas privadas estão em implementação. A publicação em produção ainda será feita.
+## Acesse
+
+| O que | Endereço |
+|---|---|
+| Jogo | https://knucklebones-frontend.onrender.com |
+| Saúde do backend | https://knucklebones-backend-b20z.onrender.com/health |
+
+O sistema usa o plano gratuito da Render: depois de um tempo sem uso, o primeiro acesso leva cerca de um minuto, enquanto o servidor acorda.
 
 ## Integrantes
 
@@ -15,13 +23,14 @@ Sistema web do jogo de dados **Knucklebones**, inspirado no minigame de *Cult of
 
 ## Sobre o sistema
 
-Funcionalidades planejadas:
+Funcionalidades:
 
 - **Fila online:** o jogador entra na fila e é pareado com outra pessoa.
 - **Contra o bot:** três níveis de dificuldade (fácil, médio e difícil).
 - **Sala privada:** criar uma sala e convidar por código ou link.
 - **Apelido opcional:** sem cadastro; quem não escolher um vira `Visitante-NNNN`.
 - **Regras:** tela explicando como jogar, com exemplos de pontuação.
+- **Partida resiliente:** quem cai ou recarrega a página tem 60 segundos para voltar. Depois do fim, os dois podem pedir revanche.
 
 Não há contas, login, histórico de partidas nem banco de dados.
 
@@ -98,7 +107,7 @@ O [CI](.github/workflows/ci.yml) executa tipos, lint, testes com cobertura, buil
 |---|---|
 | [Especificação](docs/README.md) | Regras, arquitetura, fluxos, testes e deploy |
 | [Contrato do Socket.IO](docs/contrato-socket.md) | Eventos e dados trocados entre frontend e backend |
-| [CI/CD e deploy](docs/ci-cd.md) | Pipeline, publicação e configuração do repositório |
+| [CI/CD e deploy](docs/ci-cd.md) | Pipeline, publicação, verificação da produção e configuração do repositório |
 | [Backlog](docs/backlog.md) | 30 histórias de usuário |
 | [Protótipos](docs/prototipos/) | Telas do sistema e diferenças em relação ao escopo atual |
 | [Guia de contribuição](CONTRIBUTING.md) | Issues, branches, commits, pull requests e testes |

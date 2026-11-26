@@ -1,6 +1,6 @@
 # CI/CD e deploy
 
-A integração contínua está configurada (US26 e US27). O deploy (US29) está descrito no `render.yaml`. Os testes de ponta a ponta e a verificação de produção (US28 e US30) ainda não existem; as seções sobre eles descrevem o que será feito.
+Como o sistema é testado, publicado e verificado.
 
 ## Integração contínua (GitHub Actions)
 
@@ -40,6 +40,8 @@ O backend usa `/health` como verificação de saúde. O deploy automático acont
 5. Conferir os endereços reais no painel. Se algum nome já estiver em uso, a Render acrescenta um sufixo: nesse caso, corrigir as variáveis e publicar de novo.
 6. Abrir `/health` no backend, que responde `{"status":"ok"}`, e jogar no endereço do frontend.
 
+Na publicação atual, o backend recebeu o sufixo `-b20z`. Os endereços em uso estão no [README](../README.md#acesse).
+
 As variáveis `VITE_*` entram no build: ao alterá-las, publique o frontend de novo. O CORS do backend aceita apenas o endereço em `FRONTEND_URL`.
 
 ### Sem autorização no repositório
@@ -48,7 +50,12 @@ A Render também publica um repositório público informado pelo endereço, mas 
 
 ## Verificação da produção
 
-Arquivo previsto: `.github/workflows/smoke.yml`, diário e com disparo manual. Ele confere o `/health` do backend e a página inicial do frontend, usando as variáveis de repositório `BACKEND_URL` e `FRONTEND_URL`.
+O workflow [`.github/workflows/smoke.yml`](../.github/workflows/smoke.yml) roda uma vez por dia e pode ser disparado manualmente na aba **Actions**. Ele confere:
+
+- o `/health` do backend, incluindo a liberação do frontend no CORS;
+- a página inicial e a rota `/regras` do frontend.
+
+Os endereços atuais estão no próprio arquivo. Quem administra o repositório pode substituí-los pelas variáveis `BACKEND_URL` e `FRONTEND_URL`, sem barra no final.
 
 ## Voltar uma versão
 

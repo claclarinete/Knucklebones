@@ -219,7 +219,7 @@ As boas práticas estão em [CONTRIBUTING.md](../CONTRIBUTING.md#testes).
 
 ## 11. Deploy
 
-Os dois serviços são descritos no [render.yaml](../render.yaml) e publicados conforme [ci-cd.md](ci-cd.md).
+Os dois serviços são descritos no [render.yaml](../render.yaml) e publicados conforme [ci-cd.md](ci-cd.md). Os endereços publicados estão no [README](../README.md#acesse).
 
 | Parte | Onde | Configuração |
 |---|---|---|
