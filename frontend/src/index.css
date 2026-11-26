@@ -1,15 +1,41 @@
+:root {
+  --cor-ceu: #1e2340;
+  --cor-barra: #1a1628;
+  --cor-contorno: #120f1c;
+  --cor-painel: #2a2440;
+  --cor-painel-escuro: #211c35;
+  --cor-texto: #f5e9cf;
+  --cor-texto-suave: #c6bbdc;
+  --cor-destaque: #ffcf6b;
+  --cor-destaque-sombra: #d0913c;
+  --cor-jogador: #8ab4f0;
+  --cor-jogador-sombra: #5a7fc0;
+  --cor-adversario: #f08a5d;
+  --cor-neutra: #4b4470;
+  --cor-neutra-sombra: #35305a;
+
+  --fonte-titulo: 'Silkscreen', monospace;
+  --fonte-texto: 'Pixelify Sans', system-ui, sans-serif;
+
+  --espaco-1: 0.25rem;
+  --espaco-2: 0.5rem;
+  --espaco-3: 1rem;
+  --espaco-4: 1.5rem;
+  --espaco-5: 2.5rem;
+  --borda: 4px;
+  --largura-conteudo: 70rem;
+
+  font-family: var(--fonte-texto);
+  font-size: 100%;
+  line-height: 1.5;
+  color: var(--cor-texto);
+  background-color: var(--cor-ceu);
+}
+
 *,
 *::before,
 *::after {
   box-sizing: border-box;
-}
-
-:root {
-  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  line-height: 1.5;
-  color: #2b2118;
-  background-color: #f4ecd8;
-  -webkit-font-smoothing: antialiased;
 }
 
 body {
@@ -17,8 +43,57 @@ body {
   min-height: 100vh;
 }
 
+/* O cenário fica numa camada fixa, alinhado ao chão, em qualquer altura de página. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: url('./assets/cenario.png') center bottom / cover no-repeat;
+  image-rendering: pixelated;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--fonte-titulo);
+  line-height: 1.2;
+}
+
+a {
+  color: var(--cor-destaque);
+}
+
+:focus-visible {
+  outline: var(--borda) solid var(--cor-texto);
+  outline-offset: var(--borda);
+}
+
 main {
-  max-width: 960px;
+  max-width: var(--largura-conteudo);
   margin: 0 auto;
-  padding: 1.5rem 1rem;
+  padding: var(--espaco-5) var(--espaco-3);
+}
+
+.painel {
+  max-width: 32rem;
+  margin: 0 auto;
+  padding: var(--espaco-5) var(--espaco-4);
+  text-align: center;
+  background: var(--cor-painel);
+  border: var(--borda) solid var(--cor-contorno);
+}
+
+.botao {
+  display: inline-block;
+  padding: var(--espaco-2) var(--espaco-4);
+  font-family: var(--fonte-titulo);
+  text-decoration: none;
+  color: var(--cor-barra);
+  background: var(--cor-destaque);
+  border: 0;
+  box-shadow:
+    inset 0 calc(-1 * var(--borda)) 0 var(--cor-destaque-sombra),
+    0 0 0 var(--borda) var(--cor-contorno);
+  cursor: pointer;
 }
