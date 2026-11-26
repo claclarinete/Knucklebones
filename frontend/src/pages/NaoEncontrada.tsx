@@ -3,8 +3,13 @@ import { Link } from 'react-router';
 export function NaoEncontrada() {
   return (
     <main>
-      <h1>Página não encontrada</h1>
-      <Link to="/">Voltar para o lobby</Link>
+      <section className="painel">
+        <h1>Página não encontrada</h1>
+        <p>O endereço que você abriu não existe.</p>
+        <Link to="/" className="botao">
+          Voltar para o lobby
+        </Link>
+      </section>
     </main>
   );
 }

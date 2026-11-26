@@ -1,0 +1,65 @@
+.barra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espaco-3) var(--espaco-4);
+  min-height: 4.75rem;
+  padding: var(--espaco-3) max(var(--espaco-3), calc((100% - var(--largura-conteudo)) / 2 + var(--espaco-3)));
+  background: var(--cor-barra);
+  border-bottom: var(--borda) solid var(--cor-contorno);
+}
+
+.barra__marca {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-2);
+  font: 700 1.375rem var(--fonte-titulo);
+  text-decoration: none;
+  text-transform: uppercase;
+  color: var(--cor-destaque);
+  text-shadow: 0 3px 0 #b85a38;
+}
+
+.barra__links {
+  display: flex;
+  gap: var(--espaco-2);
+}
+
+.barra__link {
+  padding: var(--espaco-2) var(--espaco-3);
+  font: 0.875rem var(--fonte-titulo);
+  text-decoration: none;
+  color: var(--cor-texto);
+}
+
+.barra__link[aria-current='page'] {
+  color: var(--cor-barra);
+  background: var(--cor-destaque);
+  box-shadow:
+    inset 0 calc(-1 * var(--borda)) 0 var(--cor-destaque-sombra),
+    0 0 0 var(--borda) var(--cor-contorno);
+}
+
+.barra__jogador {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-2);
+  min-width: 0;
+  margin: 0 0 0 auto;
+  font-size: 1.125rem;
+  overflow-wrap: anywhere;
+}
+
+.barra__avatar {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  font-family: var(--fonte-titulo);
+  color: var(--cor-barra);
+  background: var(--cor-jogador);
+  box-shadow:
+    inset 0 -3px 0 var(--cor-jogador-sombra),
+    0 0 0 var(--borda) var(--cor-contorno);
+}
