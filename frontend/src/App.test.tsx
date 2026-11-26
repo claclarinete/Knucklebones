@@ -1,7 +1,8 @@
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import type { Socket } from 'socket.io-client';
 import { MemoryRouter } from 'react-router';
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { App } from './App';
 import { SocketContext } from './services/SocketContext';
 import { criarSocketFalso } from './test/socketFalso';
@@ -17,9 +18,18 @@ function renderAt(path: string) {
 }
 
 describe('rotas', () => {
+  beforeEach(() => vi.stubGlobal('fetch', vi.fn().mockResolvedValue(Response.json({ status: 'ok' }))));
+  afterEach(() => vi.unstubAllGlobals());
+
+  it('consulta a saúde do servidor ao abrir o site', () => {
+    renderAt('/regras');
+
+    expect(fetch).toHaveBeenCalledWith(expect.stringMatching(/\/health$/), expect.anything());
+  });
+
   it.each([
     ['/', 'Olá, visitante!'],
-    ['/regras', 'Regras'],
+    ['/regras', 'Como jogar'],
   ])('%s mostra a página %s', (path, title) => {
     renderAt(path);
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(title);
@@ -35,5 +45,14 @@ describe('rotas', () => {
     renderAt('/nao-existe');
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Página não encontrada');
     expect(screen.getByRole('link', { name: 'Voltar para o lobby' })).toHaveAttribute('href', '/');
+  });
+
+  it('cada nova tela começa no topo', async () => {
+    renderAt('/pagina-que-nao-existe');
+    document.documentElement.scrollTop = 500;
+
+    await userEvent.click(screen.getByRole('link', { name: 'Voltar para o lobby' }));
+
+    expect(document.documentElement.scrollTop).toBe(0);
   });
 });

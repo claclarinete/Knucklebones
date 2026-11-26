@@ -116,6 +116,7 @@ describe('fim de partida', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Ver tabuleiro' }));
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Jogar na coluna 1' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Ver resultado' })).toHaveFocus();
     await userEvent.click(screen.getByRole('button', { name: 'Ver resultado' }));
 
     expect(janela()).toBeInTheDocument();

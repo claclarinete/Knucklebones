@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, type ReactNode } from 'react';
+import { useId, useLayoutEffect, useRef, type ReactNode } from 'react';
 import './Modal.css';
 
 interface ModalProps {
@@ -12,7 +12,8 @@ export function Modal({ titulo, aoFechar, children }: ModalProps) {
   const ref = useRef<HTMLDialogElement>(null);
   const idTitulo = useId();
 
-  useEffect(() => {
+  // Fecha antes de a janela sair da página, para o navegador devolver o foco a quem a abriu.
+  useLayoutEffect(() => {
     const janela = ref.current!;
     // showModal prende o foco na janela; o atributo cobre ambientes sem esse recurso.
     if (janela.showModal) janela.showModal();

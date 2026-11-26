@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { useConexao } from '../hooks/useConexao';
 import { useJogada } from '../hooks/useJogada';
 import { useResultado } from '../hooks/useResultado';
@@ -38,6 +38,8 @@ export function MesaDeJogo({ partida }: { partida: GameStart }) {
   const { resultado, revanche, pedirRevanche, voltarAoLobby } = useResultado();
   // Guarda qual resultado foi fechado: o de uma revanche volta a abrir a janela.
   const [fechado, setFechado] = useState<object | null>(null);
+  const verResultado = useRef<HTMLButtonElement>(null);
+  const resultadoFechado = resultado !== null && fechado === resultado;
   const { semConexao, prazo, segundosRestantes } = useConexao();
   const socket = useContext(SocketContext);
   const [confirmando, setConfirmando] = useState(false);
@@ -55,6 +57,11 @@ export function MesaDeJogo({ partida }: { partida: GameStart }) {
   if (acabou) vez = 'Fim de jogo';
   const pausada = aguardando || semConexao;
 
+  // A janela abre sozinha; ao fechá-la, o foco vai para o botão que a reabre.
+  useEffect(() => {
+    if (resultadoFechado) verResultado.current?.focus();
+  }, [resultadoFechado]);
+
   function desistir() {
     socket.emit('game:forfeit');
     setConfirmando(false);
@@ -71,6 +78,10 @@ export function MesaDeJogo({ partida }: { partida: GameStart }) {
         <p className="partida__modo">{bot ? 'Contra o bot' : 'Online'} - Sala {code}</p>
         <p role="status" className={minhaVez && !acabou && !pausada ? 'partida__vez partida__vez--minha' : 'partida__vez'}>
           {vez}
+          {/* O valor do dado entra no anúncio da mudança de turno. */}
+          {!acabou && !pausada && estado.die && (
+            <span className="so-leitor">, o dado é {estado.die}</span>
+          )}
         </p>
         {!acabou && (
           <button
@@ -114,7 +125,12 @@ export function MesaDeJogo({ partida }: { partida: GameStart }) {
             </h2>
             <div className="modal__acoes">
               {resultado && (
-                <button type="button" className="botao" onClick={() => setFechado(null)}>
+                <button
+                  ref={verResultado}
+                  type="button"
+                  className="botao"
+                  onClick={() => setFechado(null)}
+                >
                   Ver resultado
                 </button>
               )}

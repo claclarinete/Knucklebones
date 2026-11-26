@@ -110,8 +110,55 @@
 }
 
 @media (max-width: 48rem) {
+  /* Compacta a tela para o dado e o seu tabuleiro aparecerem juntos no celular. */
+  main:has(.partida) {
+    padding-block: var(--espaco-3);
+  }
+
   .partida {
     grid-template-columns: minmax(0, 1fr);
+    gap: var(--espaco-3);
+  }
+
+  .partida__topo {
+    gap: var(--espaco-2);
+  }
+
+  .partida__topo .partida__modo {
+    flex-basis: 100%;
+    padding-block: 0;
+    text-align: center;
+  }
+
+  .partida__vez {
+    font-size: 1rem;
+  }
+
+  .mesa {
+    gap: var(--espaco-2);
+    padding: var(--espaco-2);
+  }
+
+  .mesa .tabuleiro {
+    /* A área de toque é a coluna inteira, então o dado pode ser menor. */
+    --lado: max(2.5rem, min(4.375rem, 17vw, 6vh));
+  }
+
+  .mesa .coluna-area {
+    gap: var(--espaco-2);
+  }
+
+  .jogador {
+    font-size: 1rem;
+  }
+
+  .jogador__total {
+    font-size: 1.25rem;
+  }
+
+  .jogador__avatar {
+    width: 1.5rem;
+    height: 1.5rem;
   }
 
   /* No celular o dado vem antes da mesa; placar e legenda ficam depois dela. */
@@ -119,9 +166,38 @@
     display: contents;
   }
 
-  .dado-da-vez {
+  .partida__lateral .dado-da-vez {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--espaco-3);
     order: -1;
-    padding-bottom: var(--espaco-3);
+    padding: var(--espaco-2) var(--espaco-3);
+  }
+
+  /* O título continua disponível para leitores de tela. */
+  .dado-da-vez .painel__titulo {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  .dado-da-vez .dado {
+    --lado: 3.5rem;
+
+    flex-shrink: 0;
+    margin: 0;
+  }
+
+  .dado-da-vez p {
+    margin: 0;
+    text-align: left;
+  }
+
+  .dado-da-vez .modal__acoes {
+    margin: 0;
   }
 
   .partida__topo {

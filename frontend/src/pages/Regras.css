@@ -1,0 +1,71 @@
+.regras {
+  display: grid;
+  justify-items: center;
+  gap: var(--espaco-5);
+  padding-bottom: var(--espaco-5);
+}
+
+.regras h1,
+.regras__intro {
+  margin: 0;
+  text-align: center;
+}
+
+.regras .regra {
+  width: 100%;
+  max-width: 48rem;
+}
+
+.regra .dado {
+  --lado: 3rem;
+}
+
+.regra > .dado {
+  margin: 0 auto;
+}
+
+/* Os dados precisam ter o tamanho dos espaços do tabuleiro de exemplo. */
+.regra .tabuleiro,
+.regra .tabuleiro .dado {
+  --lado: 2.75rem;
+}
+
+.regra strong {
+  color: var(--cor-sucesso);
+}
+
+.regra__comparacao {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: var(--espaco-5);
+}
+
+.regra__comparacao figure {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espaco-3);
+  margin: 0;
+}
+
+.regra__exemplos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+  gap: var(--espaco-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.regra__exemplos li {
+  padding: var(--espaco-3);
+  background: var(--cor-painel-escuro);
+  box-shadow: 0 0 0 var(--borda) var(--cor-contorno);
+}
+
+.regra__exemplos div {
+  display: flex;
+  justify-content: center;
+  gap: var(--espaco-3);
+}

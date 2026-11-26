@@ -23,6 +23,13 @@ function abrirMesa(partida: GameStart = criarPartida()) {
   return socket;
 }
 
+/** O navegador tira o foco do botão desabilitado; o jsdom precisa de ajuda. */
+function perderFoco() {
+  const outro = document.body.appendChild(document.createElement('button'));
+  outro.focus();
+  outro.remove();
+}
+
 const botao = (coluna: number) =>
   screen.getByRole('button', { name: `Jogar na coluna ${coluna}` });
 const dadosDe = (tabuleiro: string) =>
@@ -213,5 +220,51 @@ describe('MesaDeJogo', () => {
     );
 
     expect(dadosDe('Tabuleiro do adversário').join()).not.toContain('destruído');
+  });
+
+  it('joga usando apenas o teclado', async () => {
+    const socket = abrirMesa();
+    const teclado = userEvent.setup();
+
+    await teclado.tab(); // Desistir
+    await teclado.tab();
+    expect(botao(1)).toHaveFocus();
+    await teclado.tab();
+    await teclado.keyboard('{Enter}');
+
+    expect(socket.enviados).toEqual([['game:move', { column: 1 }]]);
+  });
+
+  it('devolve o foco à coluna jogada quando a vez volta', async () => {
+    const socket = abrirMesa();
+    await userEvent.click(botao(2));
+    act(() => socket.receber('game:state', { state: criarEstado({ currentPlayer: 'p2' }) }));
+    perderFoco();
+
+    expect(document.body).toHaveFocus();
+
+    act(() => socket.receber('game:state', { state: criarEstado() }));
+
+    expect(botao(2)).toHaveFocus();
+  });
+
+  it('se a coluna jogada encheu, o foco vai para outra disponível', async () => {
+    const socket = abrirMesa();
+    await userEvent.click(botao(1));
+    act(() => socket.receber('game:state', { state: criarEstado({ currentPlayer: 'p2' }) }));
+    perderFoco();
+
+    const boards: GameState['boards'] = { p1: [[1, 2, 3], [], []], p2: [[], [], []] };
+    act(() => socket.receber('game:state', { state: criarEstado({ boards }) }));
+
+    expect(botao(2)).toHaveFocus();
+  });
+
+  it('anuncia a mudança de turno com o valor do dado', () => {
+    const socket = abrirMesa(criarPartida({ state: criarEstado({ currentPlayer: 'p2' }) }));
+
+    act(() => socket.receber('game:state', { state: criarEstado({ die: 6 }) }));
+
+    expect(screen.getByRole('status')).toHaveTextContent('Sua vez, o dado é 6');
   });
 });

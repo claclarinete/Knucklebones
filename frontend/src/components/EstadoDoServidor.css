@@ -1,0 +1,19 @@
+.servidor p {
+  margin: 0;
+}
+
+.servidor--visivel {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: var(--espaco-3);
+  padding: var(--espaco-2) var(--espaco-3);
+  text-align: center;
+  background: var(--cor-painel);
+  border-bottom: var(--borda) solid var(--cor-contorno);
+}
+
+.servidor--visivel .botao {
+  margin: var(--espaco-2) 0;
+}
