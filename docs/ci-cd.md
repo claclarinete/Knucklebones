@@ -1,22 +1,21 @@
 # CI/CD e deploy
 
-Este guia descreve o que será configurado depois da implementação (histórias US26 a US30). Os arquivos citados aqui ainda não existem no repositório.
+A integração contínua está configurada (US26 e US27). Os testes de ponta a ponta, o deploy e a verificação de produção (US28 a US30) ainda não existem; as seções sobre eles descrevem o que será feito.
 
 ## Integração contínua (GitHub Actions)
 
-Arquivo previsto: `.github/workflows/ci.yml`, executado a cada `push` e `pull_request`.
+Arquivo [`.github/workflows/ci.yml`](../.github/workflows/ci.yml), executado a cada `push` e `pull_request`.
 
 | Job | Sistemas | Passos |
 |---|---|---|
 | Backend e frontend | Linux, macOS e Windows | `npm ci`, `npm run typecheck`, `npm run lint` (frontend), `npm run test:coverage`, `npm run build` |
-| E2E | Linux, macOS e Windows | instalar os três projetos, instalar o Chromium do Playwright e rodar `npm test` em `e2e/` |
 | `ci-ok` | Linux | falha se algum job anterior falhar |
 
 - A versão do Node fica em um arquivo `.nvmrc` na raiz.
 - A cobertura mínima é de 80% em linhas, funções, ramos e instruções. A configuração do Vitest já aplica esse limite.
-- Os relatórios de cobertura e do Playwright são publicados como artefatos.
+- O resumo da cobertura aparece na página da execução, e os relatórios completos são publicados como artefatos.
 - Execuções antigas da mesma branch são canceladas.
-- O Playwright sobe o backend e o frontend antes dos testes.
+- Com a US28, um job de E2E vai instalar o Chromium do Playwright e rodar `npm test` em `e2e/` nos três sistemas. O Playwright subirá o backend e o frontend antes dos testes.
 
 ## Entrega contínua
 
@@ -69,7 +68,7 @@ Feita por quem administra o repositório, em **Settings**:
 
 - **General:** ligar **Automatically delete head branches**, para a branch ser excluída depois do merge.
 - **General:** manter **Allow merge commits** ligado.
-- **Branches:** proteger a `main`, exigindo uma revisão e, quando o CI existir, o check `ci-ok`.
+- **Branches:** proteger a `main`, exigindo uma revisão e, o check `ci-ok`.
 
 ## Limitações
 
