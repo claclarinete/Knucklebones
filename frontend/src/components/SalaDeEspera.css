@@ -1,0 +1,90 @@
+.sala {
+  max-width: 40rem;
+  margin-top: var(--espaco-4);
+}
+
+.sala__codigo {
+  display: flex;
+  justify-content: center;
+  gap: var(--espaco-3);
+  margin: var(--espaco-3) 0 var(--espaco-4);
+}
+
+.sala__codigo span {
+  display: grid;
+  place-items: center;
+  width: min(3rem, 11vw);
+  height: 3.5rem;
+  font: 700 1.75rem var(--fonte-titulo);
+  color: var(--cor-dado-ponto);
+  background: var(--cor-dado);
+  box-shadow:
+    inset 0 -5px 0 var(--cor-dado-sombra),
+    0 0 0 var(--borda) var(--cor-contorno);
+}
+
+.copiar__aviso {
+  min-height: 1.5rem;
+  margin: var(--espaco-2) 0;
+  color: var(--cor-sucesso);
+}
+
+.sala__rotulo {
+  display: block;
+  margin: var(--espaco-3) 0 var(--espaco-2);
+  font: 1rem var(--fonte-texto);
+  text-align: left;
+  color: var(--cor-texto-suave);
+}
+
+.sala__link {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--espaco-3);
+}
+
+.sala__link input {
+  flex: 1 1 14rem;
+  min-width: 0;
+  padding: var(--espaco-2) var(--espaco-3);
+  font: 1rem var(--fonte-texto);
+  color: var(--cor-texto);
+  background: var(--cor-espaco);
+  border: var(--borda) solid var(--cor-contorno);
+}
+
+.sala__jogadores {
+  display: grid;
+  gap: var(--espaco-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  text-align: left;
+}
+
+.sala__jogadores li {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--espaco-2);
+  padding: var(--espaco-3);
+  color: var(--cor-texto-suave);
+  background: var(--cor-painel-escuro);
+  overflow-wrap: anywhere;
+}
+
+.sala__jogadores .sala__voce {
+  color: var(--cor-texto);
+  box-shadow: 0 0 0 var(--borda) var(--cor-jogador);
+}
+
+.sala__voce strong {
+  font-family: var(--fonte-titulo);
+  color: var(--cor-sucesso);
+}
+
+.sala__nota {
+  text-align: left;
+  color: var(--cor-texto-suave);
+}

@@ -1,19 +1,24 @@
 import { render, screen } from '@testing-library/react';
+import type { Socket } from 'socket.io-client';
 import { MemoryRouter } from 'react-router';
 import { describe, expect, it } from 'vitest';
 import { App } from './App';
+import { SocketContext } from './services/SocketContext';
+import { criarSocketFalso } from './test/socketFalso';
 
 function renderAt(path: string) {
   render(
-    <MemoryRouter initialEntries={[path]}>
-      <App />
-    </MemoryRouter>,
+    <SocketContext value={criarSocketFalso() as unknown as Socket}>
+      <MemoryRouter initialEntries={[path]}>
+        <App />
+      </MemoryRouter>
+    </SocketContext>,
   );
 }
 
 describe('rotas', () => {
   it.each([
-    ['/', 'Lobby'],
+    ['/', 'Olá, visitante!'],
     ['/regras', 'Regras'],
   ])('%s mostra a página %s', (path, title) => {
     renderAt(path);
