@@ -19,7 +19,7 @@ function renderAt(path: string) {
 describe('rotas', () => {
   it.each([
     ['/', 'Olá, visitante!'],
-    ['/regras', 'Regras'],
+    ['/regras', 'Como jogar'],
   ])('%s mostra a página %s', (path, title) => {
     renderAt(path);
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(title);
