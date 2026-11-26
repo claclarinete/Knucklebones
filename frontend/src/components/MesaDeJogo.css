@@ -25,6 +25,10 @@
   color: var(--cor-texto-suave);
 }
 
+.partida__topo .botao {
+  margin: 0;
+}
+
 .partida__vez {
   font: 700 1.25rem var(--fonte-titulo);
 }
@@ -123,4 +127,9 @@
   .partida__topo {
     order: -2;
   }
+}
+
+.contagem {
+  margin: var(--espaco-3) 0;
+  font: 700 3rem var(--fonte-titulo);
 }

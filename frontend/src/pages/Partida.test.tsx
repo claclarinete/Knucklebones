@@ -135,3 +135,31 @@ describe('entrada pelo endereço', () => {
     expect(socket.enviados).toEqual([]);
   });
 });
+
+describe('retomada', () => {
+  it('ao recarregar, pede a partida de volta e mostra o tabuleiro', () => {
+    salvarPartida(SALA);
+    const socket = abrir({ conectado: false });
+
+    act(() => socket.receber('connect'));
+    expect(socket.enviados).toEqual([['game:rejoin', SALA]]);
+    act(() => socket.receber('game:start', criarPartida()));
+
+    expect(screen.getByRole('group', { name: 'Seu tabuleiro' })).toBeInTheDocument();
+  });
+
+  it('retoma o assento quando a conexão cai e volta no meio da partida', () => {
+    salvarPartida(SALA);
+    const socket = abrir();
+    act(() => socket.receber('game:start', criarPartida()));
+    socket.enviados.length = 0;
+
+    act(() => socket.receber('disconnect'));
+    expect(screen.getByText('Reconectando...')).toBeInTheDocument();
+    act(() => socket.receber('connect'));
+
+    expect(socket.enviados).toEqual([['game:rejoin', SALA]]);
+    expect(screen.getByText('Sua vez')).toBeInTheDocument();
+  });
+});
+

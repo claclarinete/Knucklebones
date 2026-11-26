@@ -24,7 +24,8 @@ export function useSala(code: string) {
   const socket = useContext(SocketContext);
   const navigate = useNavigate();
   const apelido = useApelido();
-  const estado = (useLocation().state ?? {}) as EstadoDaNavegacao;
+  const { pathname, state } = useLocation();
+  const estado = (state ?? {}) as EstadoDaNavegacao;
   const [sala, setSala] = useState<Sala>(() => {
     if (!codigoCompleto(code)) return { fase: 'erro', motivo: 'not_found' };
     if (estado.partida?.code === code) return { fase: 'jogando', partida: estado.partida };
@@ -33,6 +34,11 @@ export function useSala(code: string) {
   const jaPediu = useRef(false);
   const precisaEntrar = sala.fase === 'entrando';
   const invalido = !codigoCompleto(code);
+
+  // Os dados da navegação valem uma vez: ao recarregar ou voltar, a partida é retomada.
+  useEffect(() => {
+    if (state) navigate(pathname, { replace: true, state: null });
+  }, [state, pathname, navigate]);
 
   useEffect(() => {
     if (invalido) return;
