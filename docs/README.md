@@ -177,7 +177,7 @@ Quando um tabuleiro enche, o backend calcula o resultado e envia `game:over`. Na
 
 ### 8.5 Partida contra o bot
 
-`room:create { mode: "bot", difficulty }` inicia a partida imediatamente. Depois de cada jogada do usuário, o backend envia o novo estado, espera um pequeno intervalo e envia a jogada do bot.
+`room:create { mode: "bot", difficulty }` inicia a partida imediatamente. Depois de cada jogada do usuário, o backend envia o novo estado, espera um pequeno intervalo (`BOT_DELAY_MS`, 800 ms por padrão) e envia a jogada do bot.
 
 - **Fácil:** coluna válida aleatória.
 - **Médio:** coluna que mais soma pontos para ele e mais tira do adversário.
@@ -210,7 +210,7 @@ O planejamento tem 30 histórias em [backlog.md](backlog.md), acompanhadas pelas
 - **Unidade:** regras do jogo, bot, fila, salas, validação, componentes e hooks.
 - **Integração:** `/health` e fluxo de partida com dois clientes Socket.IO.
 - **E2E:** partida contra o bot até o fim, fila com dois navegadores, sala por link, sala inexistente, desistência e desconexão.
-- **Dados previsíveis:** em modo de teste o backend aceita `DICE_SEED`.
+- **Dados previsíveis:** fora de produção o backend aceita `DICE_SEED`, que fixa o dado, quem começa e os sorteios do bot.
 - **CI:** a cada commit, em Linux, macOS e Windows. Será configurado depois da implementação, conforme [ci-cd.md](ci-cd.md).
 
 As boas práticas estão em [CONTRIBUTING.md](../CONTRIBUTING.md#testes).
