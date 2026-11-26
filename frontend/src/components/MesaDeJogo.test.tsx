@@ -1,6 +1,7 @@
 import { act, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { Socket } from 'socket.io-client';
+import { MemoryRouter, Route, Routes } from 'react-router';
 import { describe, expect, it } from 'vitest';
 import { SocketContext } from '../services/SocketContext';
 import { criarEstado, criarPartida } from '../test/partida';
@@ -12,7 +13,11 @@ function abrirMesa(partida: GameStart = criarPartida()) {
   const socket = criarSocketFalso();
   render(
     <SocketContext value={socket as unknown as Socket}>
-      <MesaDeJogo partida={partida} />
+      <MemoryRouter>
+        <Routes>
+          <Route path="/" element={<MesaDeJogo partida={partida} />} />
+        </Routes>
+      </MemoryRouter>
     </SocketContext>,
   );
   return socket;

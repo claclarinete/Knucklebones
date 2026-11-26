@@ -33,3 +33,9 @@ export type MotivoDeJogadaRecusada =
   | 'column_full'
   | 'game_not_active'
   | 'invalid_payload';
+
+export interface GameOver {
+  winner: PlayerId | 'draw';
+  scores: Record<PlayerId, Score>;
+  reason: 'finished' | 'forfeit' | 'disconnect';
+}

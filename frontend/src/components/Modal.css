@@ -1,0 +1,32 @@
+.painel.modal {
+  /* O painel zera as margens verticais; aqui a janela precisa ficar no centro. */
+  margin: auto;
+  width: min(32rem, calc(100% - 2rem));
+  overflow: visible;
+  color: var(--cor-texto);
+  border: 0;
+}
+
+.modal::backdrop {
+  background: rgb(18 15 28 / 75%);
+}
+
+.modal__acoes {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--espaco-3);
+  margin-top: var(--espaco-4);
+}
+
+/* Em telas baixas a janela rola, para nenhum botão ficar fora do alcance. */
+@media (max-height: 34rem) {
+  .painel.modal {
+    max-height: calc(100% - 3rem);
+    overflow: auto;
+  }
+
+  .modal .painel__titulo {
+    margin-top: 0;
+  }
+}

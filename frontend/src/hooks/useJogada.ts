@@ -12,19 +12,10 @@ const RECUSAS: Record<MotivoDeJogadaRecusada, string> = {
 /** Estado da partida recebido do servidor e o envio das jogadas. */
 export function useJogada(partida: GameStart) {
   const socket = useContext(SocketContext);
-  const [origem, setOrigem] = useState(partida);
   const [estado, setEstado] = useState<GameState>(partida.state);
   // Bloqueia novos cliques até o servidor responder à jogada enviada.
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState('');
-
-  // Uma retomada traz outro game:start, que substitui o estado atual.
-  if (origem !== partida) {
-    setOrigem(partida);
-    setEstado(partida.state);
-    setEnviando(false);
-    setErro('');
-  }
 
   useEffect(() => {
     const aoMudar = ({ state }: { state: GameState }) => {
@@ -39,10 +30,13 @@ export function useJogada(partida: GameStart) {
     // A jogada pendente pode ter se perdido com a conexão.
     const aoDesconectar = () => setEnviando(false);
 
+    // Retomada e revanche chegam como game:start e substituem o estado atual.
+    socket.on('game:start', aoMudar);
     socket.on('game:state', aoMudar);
     socket.on('game:error', aoRecusar);
     socket.on('disconnect', aoDesconectar);
     return () => {
+      socket.off('game:start', aoMudar);
       socket.off('game:state', aoMudar);
       socket.off('game:error', aoRecusar);
       socket.off('disconnect', aoDesconectar);
