@@ -33,4 +33,22 @@ describe('fila online pelo Socket.IO', () => {
 
     expect(await error).toEqual({ reason: 'invalid_payload' });
   });
+
+  it('queue:leave tira o jogador da fila', async () => {
+    server = await startGameServer({ botDelayMs: 0 });
+    const [ana, bia] = [await server.connect(), await server.connect()];
+    const waiting = nextEvent(ana, 'queue:waiting');
+    ana.emit('queue:join');
+    await waiting;
+
+    ana.emit('queue:leave');
+    // A resposta a um pedido inválido confirma que o servidor já tratou a saída.
+    const processed = nextEvent(ana, 'room:error');
+    ana.emit('room:join', { code: 'K0' });
+    await processed;
+    const biaWaiting = nextEvent(bia, 'queue:waiting');
+    bia.emit('queue:join');
+
+    await expect(biaWaiting).resolves.toBeUndefined();
+  });
 });
