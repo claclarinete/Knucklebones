@@ -47,8 +47,8 @@ export function useBuscaDePartida() {
     };
     const aoCriarSala = (sala: PartidaSalva) => {
       if (pedido.modo !== 'sala') return;
-      salvarPartida(sala);
-      navigate(`/partida/${sala.code}`, { state: { criada: true } });
+      salvarPartida({ ...sala, aguardando: true });
+      navigate(`/partida/${sala.code}`);
     };
     const aoFalhar = () => {
       setErro({ modo: pedido.modo, mensagem: FALHAS[pedido.modo] });

@@ -13,12 +13,12 @@ import { Partida } from './Partida';
 
 const SALA = { code: 'K7P2QX', playerToken: 'segredo' };
 
-function abrir({ caminho = '/partida/K7P2QX', criada = false, conectado = true } = {}) {
+function abrir({ caminho = '/partida/K7P2QX', conectado = true } = {}) {
   const socket = criarSocketFalso(conectado);
   render(
     <StrictMode>
       <SocketContext value={socket as unknown as Socket}>
-        <MemoryRouter initialEntries={[{ pathname: caminho, state: { criada } }]}>
+        <MemoryRouter initialEntries={[caminho]}>
           <Routes>
             <Route path="/" element={<h1>Lobby</h1>} />
             <Route path="/partida/:codigo" element={<Partida />} />
@@ -31,8 +31,8 @@ function abrir({ caminho = '/partida/K7P2QX', criada = false, conectado = true }
 }
 
 function abrirComoCriador() {
-  salvarPartida(SALA);
-  return abrir({ criada: true });
+  salvarPartida({ ...SALA, aguardando: true });
+  return abrir();
 }
 
 afterEach(() => {
@@ -67,6 +67,24 @@ describe('sala de espera', () => {
     const socket = abrirComoCriador();
 
     expect(socket.enviados).toEqual([]);
+  });
+
+  it('ao recarregar, continua na espera e retoma o assento', () => {
+    salvarPartida({ ...SALA, aguardando: true });
+    const socket = abrir({ conectado: false });
+
+    act(() => socket.receber('connect'));
+
+    expect(screen.getByRole('heading', { name: 'Sala criada' })).toBeInTheDocument();
+    expect(socket.enviados).toEqual([['game:rejoin', SALA]]);
+  });
+
+  it('depois que a partida começa, a recarga não volta para a espera', () => {
+    const socket = abrirComoCriador();
+
+    act(() => socket.receber('game:start', criarPartida()));
+
+    expect(JSON.parse(sessionStorage.getItem(CHAVE_PARTIDA)!)).toEqual(SALA);
   });
 
   it('começa a partida quando o convidado entra', () => {
