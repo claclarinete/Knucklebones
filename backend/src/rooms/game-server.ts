@@ -7,7 +7,13 @@ import type {
   SocketData,
 } from './events.js';
 import { type Client, GameManager, type GameManagerOptions } from './manager.js';
-import { gameMoveSchema, queueJoinSchema, roomCreateSchema, roomJoinSchema } from './schemas.js';
+import {
+  gameMoveSchema,
+  gameRejoinSchema,
+  queueJoinSchema,
+  roomCreateSchema,
+  roomJoinSchema,
+} from './schemas.js';
 
 export type GameIo = Server<ClientToServerEvents, ServerToClientEvents, object, SocketData>;
 type GameSocket = Socket<ClientToServerEvents, ServerToClientEvents, object, SocketData>;
@@ -68,6 +74,15 @@ export function attachGameServer(io: GameIo, options: GameServerOptions): GameMa
       'game:move',
       validated(gameMoveSchema, gameError('invalid_payload'), ({ column }) =>
         manager.move(client, column),
+      ),
+    );
+
+    socket.on('game:forfeit', () => manager.forfeit(client));
+
+    socket.on(
+      'game:rejoin',
+      validated(gameRejoinSchema, roomError, ({ code, playerToken }) =>
+        manager.rejoin(client, code, playerToken),
       ),
     );
 
