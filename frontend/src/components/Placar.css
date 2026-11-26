@@ -1,0 +1,29 @@
+.placar table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.placar th,
+.placar td {
+  padding: var(--espaco-2) var(--espaco-1);
+}
+
+.placar tbody th {
+  font-weight: normal;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.placar td {
+  color: var(--cor-texto-suave);
+}
+
+.placar .placar__total {
+  font: 700 1.5rem var(--fonte-titulo);
+  color: var(--cor-adversario);
+  text-align: right;
+}
+
+.placar .placar__voce .placar__total {
+  color: var(--cor-jogador);
+}

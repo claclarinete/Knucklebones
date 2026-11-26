@@ -7,17 +7,18 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { CHAVE_APELIDO } from '../hooks/useApelido';
 import { CHAVE_PARTIDA, salvarPartida } from '../services/partida';
 import { SocketContext } from '../services/SocketContext';
+import { criarPartida } from '../test/partida';
 import { criarSocketFalso } from '../test/socketFalso';
 import { Partida } from './Partida';
 
 const SALA = { code: 'K7P2QX', playerToken: 'segredo' };
 
-function abrir({ caminho = '/partida/K7P2QX', criada = false, conectado = true } = {}) {
+function abrir({ caminho = '/partida/K7P2QX', conectado = true } = {}) {
   const socket = criarSocketFalso(conectado);
   render(
     <StrictMode>
       <SocketContext value={socket as unknown as Socket}>
-        <MemoryRouter initialEntries={[{ pathname: caminho, state: { criada } }]}>
+        <MemoryRouter initialEntries={[caminho]}>
           <Routes>
             <Route path="/" element={<h1>Lobby</h1>} />
             <Route path="/partida/:codigo" element={<Partida />} />
@@ -30,8 +31,8 @@ function abrir({ caminho = '/partida/K7P2QX', criada = false, conectado = true }
 }
 
 function abrirComoCriador() {
-  salvarPartida(SALA);
-  return abrir({ criada: true });
+  salvarPartida({ ...SALA, aguardando: true });
+  return abrir();
 }
 
 afterEach(() => {
@@ -68,12 +69,30 @@ describe('sala de espera', () => {
     expect(socket.enviados).toEqual([]);
   });
 
+  it('ao recarregar, continua na espera e retoma o assento', () => {
+    salvarPartida({ ...SALA, aguardando: true });
+    const socket = abrir({ conectado: false });
+
+    act(() => socket.receber('connect'));
+
+    expect(screen.getByRole('heading', { name: 'Sala criada' })).toBeInTheDocument();
+    expect(socket.enviados).toEqual([['game:rejoin', SALA]]);
+  });
+
+  it('depois que a partida começa, a recarga não volta para a espera', () => {
+    const socket = abrirComoCriador();
+
+    act(() => socket.receber('game:start', criarPartida()));
+
+    expect(JSON.parse(sessionStorage.getItem(CHAVE_PARTIDA)!)).toEqual(SALA);
+  });
+
   it('começa a partida quando o convidado entra', () => {
     const socket = abrirComoCriador();
 
-    act(() => socket.receber('game:start', SALA));
+    act(() => socket.receber('game:start', criarPartida()));
 
-    expect(screen.getByRole('status')).toHaveTextContent('Partida iniciada');
+    expect(screen.getByRole('group', { name: 'Seu tabuleiro' })).toBeInTheDocument();
   });
 
   it('cancelar fecha a sala e volta ao lobby', async () => {
@@ -134,3 +153,31 @@ describe('entrada pelo endereço', () => {
     expect(socket.enviados).toEqual([]);
   });
 });
+
+describe('retomada', () => {
+  it('ao recarregar, pede a partida de volta e mostra o tabuleiro', () => {
+    salvarPartida(SALA);
+    const socket = abrir({ conectado: false });
+
+    act(() => socket.receber('connect'));
+    expect(socket.enviados).toEqual([['game:rejoin', SALA]]);
+    act(() => socket.receber('game:start', criarPartida()));
+
+    expect(screen.getByRole('group', { name: 'Seu tabuleiro' })).toBeInTheDocument();
+  });
+
+  it('retoma o assento quando a conexão cai e volta no meio da partida', () => {
+    salvarPartida(SALA);
+    const socket = abrir();
+    act(() => socket.receber('game:start', criarPartida()));
+    socket.enviados.length = 0;
+
+    act(() => socket.receber('disconnect'));
+    expect(screen.getByText('Reconectando...')).toBeInTheDocument();
+    act(() => socket.receber('connect'));
+
+    expect(socket.enviados).toEqual([['game:rejoin', SALA]]);
+    expect(screen.getByText('Sua vez')).toBeInTheDocument();
+  });
+});
+

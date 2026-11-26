@@ -1,0 +1,30 @@
+.fim__titulo {
+  margin: var(--espaco-3) 0;
+  font: 700 2.5rem var(--fonte-titulo);
+}
+
+.fim__titulo--vitoria {
+  color: var(--cor-destaque);
+}
+
+.fim__placar {
+  display: flex;
+  justify-content: center;
+  gap: var(--espaco-5);
+  margin: 0;
+}
+
+.fim__placar dt {
+  color: var(--cor-texto-suave);
+  overflow-wrap: anywhere;
+}
+
+.fim__placar dd {
+  margin: 0;
+  font: 700 2.5rem var(--fonte-titulo);
+  color: var(--cor-adversario);
+}
+
+.fim__placar .fim__voce dd {
+  color: var(--cor-jogador);
+}

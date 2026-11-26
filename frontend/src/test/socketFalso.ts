@@ -8,6 +8,11 @@ export function criarSocketFalso(conectado = true) {
     connected: conectado,
     enviados: [] as unknown[][],
     connect() {},
+    desconexoes: 0,
+    disconnect() {
+      this.connected = false;
+      this.desconexoes += 1;
+    },
     emit(...mensagem: unknown[]) {
       this.enviados.push(mensagem);
     },

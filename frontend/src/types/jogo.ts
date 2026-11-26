@@ -26,3 +26,16 @@ export interface GameStart {
   players: Record<PlayerId, PlayerInfo>;
   state: GameState;
 }
+
+export type Column = 0 | 1 | 2;
+export type MotivoDeJogadaRecusada =
+  | 'not_your_turn'
+  | 'column_full'
+  | 'game_not_active'
+  | 'invalid_payload';
+
+export interface GameOver {
+  winner: PlayerId | 'draw';
+  scores: Record<PlayerId, Score>;
+  reason: 'finished' | 'forfeit' | 'disconnect';
+}
