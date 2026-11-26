@@ -1,7 +1,8 @@
 import { useContext, useEffect, useRef, useState } from 'react';
-import { useConexao } from '../hooks/useConexao';
+import type { useConexao } from '../hooks/useConexao';
 import { useJogada } from '../hooks/useJogada';
-import { useResultado } from '../hooks/useResultado';
+import type { useResultado } from '../hooks/useResultado';
+import { useSairDaPartida } from '../hooks/useSairDaPartida';
 import { SocketContext } from '../services/SocketContext';
 import type { Die, Difficulty, GameStart, PlayerInfo } from '../types/jogo';
 import { formatarTempo } from '../services/tempo';
@@ -33,14 +34,22 @@ function Jogador({ nome, total, voce = false }: { nome: string; total: number; v
   );
 }
 
-export function MesaDeJogo({ partida }: { partida: GameStart }) {
+interface Props {
+  partida: GameStart;
+  // Vêm de quem já escutava o servidor antes de a mesa aparecer.
+  conexao: ReturnType<typeof useConexao>;
+  fim: ReturnType<typeof useResultado>;
+}
+
+export function MesaDeJogo({ partida, conexao, fim }: Props) {
   const { estado, erro, minhaVez, podeJogar, jogar } = useJogada(partida);
-  const { resultado, revanche, pedirRevanche, voltarAoLobby } = useResultado();
+  const { resultado, revanche, pedirRevanche, voltarAoLobby } = fim;
+  useSairDaPartida();
   // Guarda qual resultado foi fechado: o de uma revanche volta a abrir a janela.
   const [fechado, setFechado] = useState<object | null>(null);
   const verResultado = useRef<HTMLButtonElement>(null);
   const resultadoFechado = resultado !== null && fechado === resultado;
-  const { semConexao, prazo, segundosRestantes } = useConexao();
+  const { semConexao, prazo, segundosRestantes } = conexao;
   const socket = useContext(SocketContext);
   const [confirmando, setConfirmando] = useState(false);
   // Guarda qual queda teve a janela fechada: uma nova queda volta a abri-la.

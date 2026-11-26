@@ -48,8 +48,6 @@ export function useResultado() {
     },
     voltarAoLobby() {
       esquecerPartida();
-      // O servidor só percebe a saída pela desconexão, e então avisa o adversário.
-      socket.disconnect();
       navigate('/');
     },
   };
