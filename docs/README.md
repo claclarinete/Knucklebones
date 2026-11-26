@@ -67,7 +67,7 @@ flowchart LR
 | Testes E2E | Playwright |
 | Cobertura | `@vitest/coverage-v8` |
 | CI | GitHub Actions (Linux, macOS e Windows) |
-| Deploy | Vercel (frontend) e Render (backend) |
+| Deploy | Render (frontend e backend) |
 
 ---
 
@@ -219,12 +219,12 @@ As boas práticas estão em [CONTRIBUTING.md](../CONTRIBUTING.md#testes).
 
 ## 11. Deploy
 
-Será configurado depois da implementação, conforme [ci-cd.md](ci-cd.md).
+Os dois serviços são descritos no [render.yaml](../render.yaml) e publicados conforme [ci-cd.md](ci-cd.md).
 
 | Parte | Onde | Configuração |
 |---|---|---|
-| Frontend | Vercel | `VITE_API_URL` e `VITE_SOCKET_URL` apontando para o backend |
-| Backend | Render | `FRONTEND_URL` apontando para o frontend |
+| Frontend | Render, site estático | `VITE_API_URL` e `VITE_SOCKET_URL` apontando para o backend |
+| Backend | Render, serviço web | `FRONTEND_URL` apontando para o frontend |
 
 > No plano gratuito da Render, o backend hiberna sem uso e demora cerca de um minuto para voltar. Abra o site alguns minutos antes de uma demonstração.
 

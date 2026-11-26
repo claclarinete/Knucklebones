@@ -304,7 +304,7 @@ Prioridade: alta. Marco: M4 Polimento e entrega.
 
 Como visitante, quero acessar o jogo por um endereço público, para jogar sem instalar nada.
 
-- Frontend na Vercel e backend na Render a partir da main.
+- Frontend e backend na Render a partir da main.
 - /health responde 200.
 - CORS libera o frontend.
 
