@@ -57,6 +57,8 @@ interface Seat {
   client: Client | null;
   /** Prazo para voltar, enquanto o jogador está desconectado durante a partida. */
   reconnect?: { deadline: number; timer: NodeJS.Timeout };
+  /** Pediu revanche depois do fim. */
+  wantsRematch?: boolean;
 }
 
 interface Room {
@@ -191,6 +193,28 @@ export class GameManager {
       return client.emit('game:error', { reason: 'game_not_active' });
     }
     this.finish(found.room, opponentOf(found.player), 'forfeit');
+  }
+
+  /**
+   * Pede ou aceita a revanche. A nova partida começa quando os dois pedem;
+   * contra o bot, começa na hora.
+   */
+  rematch(client: Client) {
+    const found = this.seatOf(client);
+    if (!found || !hasStarted(found.room) || found.room.state.status !== 'finished') {
+      return client.emit('game:error', { reason: 'game_not_active' });
+    }
+
+    const { room, player } = found;
+    if (room.difficulty) return this.startGame(room);
+
+    const opponent = room.seats[opponentOf(player)];
+    if (!opponent.client) return client.emit('opponent:left');
+    if (room.seats[player].wantsRematch) return;
+
+    room.seats[player].wantsRematch = true;
+    if (opponent.wantsRematch) return this.startGame(room);
+    opponent.client.emit('game:rematch-requested');
   }
 
   /**
@@ -378,7 +402,9 @@ export class GameManager {
   private startGame(room: Room) {
     clearTimeout(room.timer);
     room.state = createGame(this.rng);
+    room.result = undefined;
     const started = room as StartedRoom;
+    for (const seat of this.seatsOf(started)) seat.wantsRematch = false;
 
     for (const player of PLAYER_IDS) {
       const { client, token } = started.seats[player];

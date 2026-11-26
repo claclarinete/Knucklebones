@@ -79,6 +79,8 @@ export function attachGameServer(io: GameIo, options: GameServerOptions): GameMa
 
     socket.on('game:forfeit', () => manager.forfeit(client));
 
+    socket.on('game:rematch', () => manager.rematch(client));
+
     socket.on(
       'game:rejoin',
       validated(gameRejoinSchema, roomError, ({ code, playerToken }) =>
