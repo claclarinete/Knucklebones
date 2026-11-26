@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { chooseColumn, validColumns } from './bot.js';
+import { createSeededRng } from './dice.js';
+import { applyMove, createGame } from './game.js';
+import { getResult, type Winner } from './result.js';
 import { scoreBoard } from './score.js';
 import type { Board, Column, Die, Difficulty, GameState } from './types.js';
 
@@ -11,6 +14,27 @@ function botTurn(die: Die, bot: Board, human: Board = [[], [], []]): GameState {
     scores: { p1: scoreBoard(human), p2: scoreBoard(bot) },
     currentPlayer: 'p2',
     die,
+  };
+}
+
+/** Joga uma partida inteira entre duas dificuldades (p1 contra p2) e devolve o resultado. */
+function playMatch(p1: Difficulty, p2: Difficulty, seed: number): Winner {
+  const rng = createSeededRng(seed);
+  let state = createGame(rng);
+  while (state.status === 'playing') {
+    const difficulty = state.currentPlayer === 'p1' ? p1 : p2;
+    const result = applyMove(state, state.currentPlayer, chooseColumn(state, difficulty, rng), rng);
+    if (!result.ok) throw new Error(`Bot fez jogada recusada: ${result.reason}`);
+    state = result.state;
+  }
+  return getResult(state)!;
+}
+
+function tally(p1: Difficulty, p2: Difficulty, games: number) {
+  const results = Array.from({ length: games }, (_, index) => playMatch(p1, p2, index + 1));
+  return {
+    wins: results.filter((winner) => winner === 'p1').length,
+    losses: results.filter((winner) => winner === 'p2').length,
   };
 }
 
@@ -75,5 +99,43 @@ describe('chooseColumn', () => {
     ])('sorteia entre as colunas empatadas', (rng, expected) => {
       expect(chooseColumn(botTurn(2, [[], [], []]), 'medium', rng)).toBe(expected);
     });
+
+    it('vence a maioria das partidas contra o fácil', () => {
+      const { wins } = tally('medium', 'easy', 10);
+
+      expect(wins).toBeGreaterThanOrEqual(7);
+    });
+  });
+
+  describe('difícil', () => {
+    it('destrói a coluna mais valiosa do adversário', () => {
+      const state = botTurn(5, [[], [], []], [[2], [5, 5, 5], [1]]);
+
+      expect(chooseColumn(state, 'hard', FIRST)).toBe(1);
+    });
+
+    it.each<[string, GameState]>([
+      ['no começo da partida', botTurn(3, [[], [], []])],
+      ['no meio da partida', botTurn(4, [[1, 4], [6], [2, 2]], [[3], [5, 5], [6, 1]])],
+      ['perto do fim', botTurn(6, [[1, 2, 3], [4, 5], [6]], [[2, 2, 3], [1, 5, 5], [4]])],
+    ])('responde em menos de 1 segundo %s', (_moment, state) => {
+      const startedAt = performance.now();
+
+      chooseColumn(state, 'hard', FIRST);
+
+      expect(performance.now() - startedAt).toBeLessThan(1000);
+    });
+
+    it('vence a maioria das partidas contra o fácil', () => {
+      const { wins } = tally('hard', 'easy', 10);
+
+      expect(wins).toBeGreaterThanOrEqual(7);
+    }, 20_000);
+
+    it('vence mais do que perde contra o médio', () => {
+      const { wins, losses } = tally('hard', 'medium', 20);
+
+      expect(wins).toBeGreaterThan(losses);
+    }, 30_000);
   });
 });

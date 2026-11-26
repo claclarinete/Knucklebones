@@ -1,6 +1,6 @@
 import { COLUMN_SIZE } from './board.js';
 import { applyMove, opponentOf } from './game.js';
-import type { Column, Difficulty, GameState, Rng } from './types.js';
+import type { Column, Die, Difficulty, GameState, PlayerId, Rng } from './types.js';
 
 const ALL_COLUMNS: readonly Column[] = [0, 1, 2];
 
@@ -43,6 +43,61 @@ function chooseMedium(state: GameState, rng: Rng): Column {
   );
 }
 
+const DIE_FACES: readonly Die[] = [1, 2, 3, 4, 5, 6];
+const WIN_BONUS = 1000;
+
+/** Quantas jogadas depois da atual o difícil considera. */
+export const HARD_SEARCH_DEPTH = 3;
+
+/** Aplica a jogada sem rolar o próximo dado: quem chama decide o valor. */
+function simulate(state: GameState, column: Column): GameState {
+  const result = applyMove(state, state.currentPlayer, column, () => 0);
+  return result.ok ? result.state : state;
+}
+
+/** Vantagem de `me` no placar, com bônus decisivo para partidas terminadas. */
+function evaluate(state: GameState, me: PlayerId): number {
+  const diff = state.scores[me].total - state.scores[opponentOf(me)].total;
+  if (state.status !== 'finished') return diff;
+  return diff + Math.sign(diff) * WIN_BONUS;
+}
+
+/** Nó de acaso: média sobre os 6 valores possíveis do próximo dado. */
+function chanceValue(state: GameState, depth: number, me: PlayerId): number {
+  if (state.status === 'finished' || depth === 0) return evaluate(state, me);
+
+  let sum = 0;
+  for (const die of DIE_FACES) {
+    sum += decisionValue({ ...state, die }, depth, me);
+  }
+  return sum / DIE_FACES.length;
+}
+
+/** Nó de decisão: `me` maximiza a vantagem e o adversário a minimiza. */
+function decisionValue(state: GameState, depth: number, me: PlayerId): number {
+  const values = validColumns(state).map((column) =>
+    chanceValue(simulate(state, column), depth - 1, me),
+  );
+  return state.currentPlayer === me ? Math.max(...values) : Math.min(...values);
+}
+
+/**
+ * Difícil: expectiminimax. Considera as próximas jogadas dos dois jogadores
+ * e, entre elas, os 6 valores possíveis do dado.
+ */
+function chooseHard(state: GameState, rng: Rng): Column {
+  const me = state.currentPlayer;
+  const options = validColumns(state).map((column) => ({
+    column,
+    value: chanceValue(simulate(state, column), HARD_SEARCH_DEPTH, me),
+  }));
+  const best = Math.max(...options.map((option) => option.value));
+  return pickRandom(
+    options.filter((option) => best - option.value < 1e-9).map((option) => option.column),
+    rng,
+  );
+}
+
 /**
  * Escolhe a coluna do jogador da vez para o dado atual.
  * Nunca escolhe coluna cheia. Lança erro se a partida não estiver em andamento.
@@ -59,7 +114,8 @@ export function chooseColumn(
     case 'easy':
       return chooseEasy(state, rng);
     case 'medium':
-    case 'hard':
       return chooseMedium(state, rng);
+    case 'hard':
+      return chooseHard(state, rng);
   }
 }
