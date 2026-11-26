@@ -1,0 +1,32 @@
+.tabuleiro {
+  /* Diminui em telas estreitas para as três colunas caberem sem rolagem. */
+  --lado: min(4.375rem, 17vw);
+
+  display: flex;
+  justify-content: center;
+  gap: calc(var(--lado) * 0.32);
+}
+
+.coluna {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--lado) * 0.2);
+  margin: 0;
+  padding: calc(var(--lado) * 0.18);
+  list-style: none;
+  background: var(--cor-coluna);
+  box-shadow: 0 0 0 var(--borda) var(--cor-contorno);
+}
+
+.coluna--invertida {
+  flex-direction: column-reverse;
+}
+
+.espaco {
+  width: var(--lado);
+  height: var(--lado);
+  background: var(--cor-espaco);
+  box-shadow:
+    inset 0 var(--borda) 0 var(--cor-espaco-sombra),
+    0 0 0 var(--borda) var(--cor-contorno);
+}

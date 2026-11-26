@@ -1,0 +1,193 @@
+.cenario {
+  /* Um pixel da cena original (2560 x 1600), escalado para cobrir a tela. */
+  --u: max(100vw / 2560, 100vh / 1600);
+
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  background: linear-gradient(
+    to top,
+    #f6b46a calc(var(--u) * 480),
+    #e48a62 0 calc(var(--u) * 580),
+    #c06a68 0 calc(var(--u) * 680),
+    #93576e 0 calc(var(--u) * 800),
+    #6b4a6e 0 calc(var(--u) * 940),
+    #4a3d66 0 calc(var(--u) * 1100),
+    #33325a 0 calc(var(--u) * 1300),
+    #262a4c 0 calc(var(--u) * 1560),
+    #1e2340 0
+  );
+}
+
+.cenario__cena {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: calc(var(--u) * 2560);
+  height: calc(var(--u) * 1600);
+  transform: translateX(-50%);
+}
+
+.cenario__cena > * {
+  position: absolute;
+  left: calc(var(--u) * var(--x));
+  top: calc(var(--u) * var(--y));
+}
+
+.estrela {
+  width: calc(var(--u) * var(--tamanho));
+  height: calc(var(--u) * var(--tamanho));
+  background: currentColor;
+  animation: cintilar 4s ease-in-out infinite;
+  /* Durações e atrasos variados para as estrelas não piscarem juntas. */
+  animation-duration: calc(3s + mod(var(--i), 7) * 0.6s);
+  animation-delay: calc(mod(var(--i) * 13, 29) * -0.31s);
+}
+
+.estrela--cruz {
+  clip-path: polygon(33% 0, 67% 0, 67% 33%, 100% 33%, 100% 67%, 67% 67%, 67% 100%, 33% 100%, 33% 67%, 0 67%, 0 33%, 33% 33%);
+}
+
+.estrela-cadente {
+  --x: 1750;
+  --y: 120;
+
+  width: calc(var(--u) * 140);
+  height: calc(var(--u) * 6);
+  background: linear-gradient(to left, transparent, #ffeaa6);
+  opacity: 0;
+  animation: cair 11s linear 3s infinite;
+}
+
+.lua,
+.sol {
+  background: center / contain no-repeat;
+}
+
+.lua {
+  --x: 2162;
+  --y: 156;
+
+  width: calc(var(--u) * 144);
+  height: calc(var(--u) * 156);
+  background-image: url('../assets/cenario/lua.svg');
+  filter: drop-shadow(0 0 calc(var(--u) * 30) rgb(255 234 166 / 45%));
+  animation: flutuar 9s ease-in-out infinite alternate;
+}
+
+.sol {
+  --x: 1504;
+  --y: 1096;
+
+  width: calc(var(--u) * 272);
+  height: calc(var(--u) * 272);
+  background-image: url('../assets/cenario/sol.svg');
+  animation: brilhar 6s ease-in-out infinite alternate;
+}
+
+/* Cada montanha é um ladrilho de 5120 de largura. Mover exatamente um ladrilho fecha o ciclo. */
+.camada {
+  --ladrilho: calc(var(--u) * 5120);
+
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: calc(100% + var(--ladrilho));
+  height: calc(var(--u) * 560);
+  background: left bottom / var(--ladrilho) 100% repeat-x;
+  animation: deslizar linear infinite;
+  will-change: transform;
+}
+
+/* Quanto mais perto, mais rápido: é o que cria a sensação de profundidade. */
+.camada--distante {
+  background-image: url('../assets/cenario/montanhas-distantes.svg');
+  animation-duration: 320s;
+}
+
+.camada--proxima {
+  background-image: url('../assets/cenario/montanhas-proximas.svg');
+  animation-duration: 200s;
+}
+
+.camada--arvores {
+  background-image: url('../assets/cenario/arvores.svg');
+  animation-duration: 110s;
+}
+
+.vagalume {
+  width: calc(var(--u) * 8);
+  height: calc(var(--u) * 8);
+  background: #ffe08a;
+  box-shadow: 0 0 calc(var(--u) * 20) calc(var(--u) * 4) rgb(255 224 138 / 60%);
+  animation:
+    vagar calc(6s + mod(var(--i), 5) * 1.3s) ease-in-out calc(var(--i) * -1.7s) infinite alternate,
+    cintilar calc(2s + mod(var(--i), 3) * 0.7s) ease-in-out calc(var(--i) * -0.9s) infinite;
+}
+
+@keyframes cintilar {
+  50% {
+    opacity: 0.2;
+  }
+}
+
+@keyframes cair {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) rotate(-25deg);
+  }
+  2% {
+    opacity: 1;
+  }
+  9%,
+  100% {
+    opacity: 0;
+    transform: translate(calc(var(--u) * -620), calc(var(--u) * 290)) rotate(-25deg);
+  }
+}
+
+@keyframes flutuar {
+  to {
+    transform: translateY(calc(var(--u) * 24));
+  }
+}
+
+@keyframes brilhar {
+  from {
+    filter: drop-shadow(0 0 calc(var(--u) * 10) rgb(255 233 176 / 30%));
+  }
+  to {
+    filter: drop-shadow(0 0 calc(var(--u) * 60) rgb(255 233 176 / 85%));
+  }
+}
+
+@keyframes deslizar {
+  to {
+    transform: translateX(calc(-1 * var(--ladrilho)));
+  }
+}
+
+@keyframes vagar {
+  33% {
+    transform: translate(calc(var(--u) * 36), calc(var(--u) * -48));
+  }
+  66% {
+    transform: translate(calc(var(--u) * -28), calc(var(--u) * -20));
+  }
+  100% {
+    transform: translate(calc(var(--u) * 20), calc(var(--u) * 24));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cenario *,
+  .camada {
+    animation: none;
+  }
+
+  .estrela-cadente {
+    display: none;
+  }
+}
