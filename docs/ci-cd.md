@@ -1,6 +1,6 @@
 # CI/CD e deploy
 
-A integração contínua está configurada (US26 e US27). Os testes de ponta a ponta, o deploy e a verificação de produção (US28 a US30) ainda não existem; as seções sobre eles descrevem o que será feito.
+A integração contínua (US26 e US27) e os testes de ponta a ponta (US28) estão configurados. O deploy e a verificação de produção (US29 e US30) ainda não existem; as seções sobre eles descrevem o que será feito.
 
 ## Integração contínua (GitHub Actions)
 
@@ -9,13 +9,14 @@ Arquivo [`.github/workflows/ci.yml`](../.github/workflows/ci.yml), executado a c
 | Job | Sistemas | Passos |
 |---|---|---|
 | Backend e frontend | Linux, macOS e Windows | `npm ci`, `npm run typecheck`, `npm run lint` (frontend), `npm run test:coverage`, `npm run build` |
+| E2E | Linux, macOS e Windows | `npm ci` nas três pastas, `npm run typecheck` e `npm test` em `e2e/`, depois de instalar o Chromium do Playwright |
 | `ci-ok` | Linux | falha se algum job anterior falhar |
 
 - A versão do Node fica em um arquivo `.nvmrc` na raiz.
 - A cobertura mínima é de 80% em linhas, funções, ramos e instruções. A configuração do Vitest já aplica esse limite.
 - O resumo da cobertura aparece na página da execução, e os relatórios completos são publicados como artefatos.
 - Execuções antigas da mesma branch são canceladas.
-- Com a US28, um job de E2E vai instalar o Chromium do Playwright e rodar `npm test` em `e2e/` nos três sistemas. O Playwright subirá o backend e o frontend antes dos testes.
+- No job de E2E, o Playwright sobe o backend e o frontend antes dos testes. O relatório de cada sistema é publicado como artefato (`playwright-<sistema>`).
 
 ## Entrega contínua
 

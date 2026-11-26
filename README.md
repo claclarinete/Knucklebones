@@ -76,7 +76,21 @@ npm run test:coverage    # os mesmos testes, com relatório de cobertura
 
 A cobertura mínima é de **80%** em linhas, funções, ramos e instruções, e o comando falha abaixo disso. O relatório fica em `coverage/` (abra `coverage/index.html` no navegador).
 
-O [CI](.github/workflows/ci.yml) executa tipos, lint, testes com cobertura e build em Linux, macOS e Windows a cada commit. Em cada execução, o resumo da cobertura aparece na página do GitHub Actions e os relatórios completos ficam disponíveis como artefatos.
+### Testes de ponta a ponta
+
+Os testes do Playwright ficam em `e2e/` e abrem o sistema num navegador de verdade. Eles sobem o backend (porta 3100) e o frontend (porta 5180) sozinhos, então basta ter rodado `npm install` em `backend/` e `frontend/`:
+
+```bash
+cd e2e
+npm install
+npx playwright install chromium   # só na primeira vez
+npm test                          # roda os testes
+npm run report                    # abre o relatório da última execução
+```
+
+Mais detalhes em [e2e/README.md](e2e/README.md).
+
+O [CI](.github/workflows/ci.yml) executa tipos, lint, testes com cobertura, build e testes de ponta a ponta em Linux, macOS e Windows a cada commit. Em cada execução, o resumo da cobertura aparece na página do GitHub Actions e os relatórios completos ficam disponíveis como artefatos.
 
 ## Documentação
 
