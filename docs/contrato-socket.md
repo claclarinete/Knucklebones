@@ -70,3 +70,4 @@ interface PlayerInfo {
 - Partidas da fila e contra o bot também têm `code`, para a rota `/partida/:codigo` e a retomada.
 - Todo dado recebido é validado com Zod. Erros em eventos `queue:*` e `room:*` respondem `room:error`; em eventos `game:*`, `game:error` (ou `room:error` no `game:rejoin`).
 - O `playerToken` é enviado apenas ao próprio jogador.
+- Na partida contra o bot, o jogador ocupa o `p1` e o bot o `p2`, com `nickname: 'Bot'`.
