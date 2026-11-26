@@ -83,9 +83,18 @@ O código em [src/rooms/](src/rooms/) liga as regras ao Socket.IO.
 | [schemas.ts](src/rooms/schemas.ts) | Validação Zod dos dados de cada evento do cliente |
 | [nickname.ts](src/rooms/nickname.ts) | Apelido escolhido ou `Visitante-NNNN` |
 | [codes.ts](src/rooms/codes.ts) | Código de sala com 6 caracteres, sem `0`, `O`, `1` e `I` |
-| [game-server.ts](src/rooms/game-server.ts) | Tratamento dos eventos e estado das partidas em memória |
+| [manager.ts](src/rooms/manager.ts) | `GameManager`: fila, salas, partidas em memória, bot, pausa, retomada e revanche |
+| [game-server.ts](src/rooms/game-server.ts) | Liga cada evento do Socket.IO ao `GameManager`, depois da validação Zod |
 
-Hoje o servidor trata `room:create` com `mode: 'bot'` e `game:move`. Sala privada, fila, desistência, retomada e revanche chegam nas próximas histórias. Os testes de integração em [tests/](tests/) sobem o servidor numa porta livre e jogam com clientes Socket.IO reais.
+O `GameManager` não conhece o Socket.IO: ele recebe os pedidos já validados e avisa os jogadores por uma interface `Client`, que o `game-server` implementa com o socket. Por isso os testes de unidade (`manager.*.test.ts`) usam clientes falsos e relógio simulado do Vitest para os prazos, sem esperar de verdade.
+
+| Prazo | Valor |
+|---|---|
+| Sala privada sem convidado | 10 minutos; o criador recebe `room:error` com `not_found` |
+| Volta depois de uma queda | 60 segundos; sem volta, quem ficou vence por abandono |
+| Partida terminada guardada para revanche e retomada | 5 minutos |
+
+Os testes de integração em [tests/](tests/) sobem o servidor numa porta livre e jogam com clientes Socket.IO reais: partida contra o bot, sala privada, fila, partida online, retomada e revanche.
 
 ## Estado
 

@@ -71,3 +71,15 @@ interface PlayerInfo {
 - Todo dado recebido é validado com Zod. Erros em eventos `queue:*` e `room:*` respondem `room:error`; em eventos `game:*`, `game:error` (ou `room:error` no `game:rejoin`).
 - O `playerToken` é enviado apenas ao próprio jogador.
 - Na partida contra o bot, o jogador ocupa o `p1` e o bot o `p2`, com `nickname: 'Bot'`.
+- Na fila, quem chegou primeiro ocupa o `p1`. Na sala privada, o criador é o `p1` e mantém o `playerToken` de `room:created`.
+- A sala privada sem convidado expira em 10 minutos e o criador recebe `room:error` com `not_found`.
+- Começar outra partida (`queue:join` ou `room:create`) no meio de uma partida online conta como desistência; o adversário recebe `game:over` com `forfeit` e depois `opponent:left`.
+
+## Pausa, retomada e revanche
+
+- Quando um jogador cai, a partida passa a `paused`: o adversário recebe `game:state` e `opponent:disconnected`. Jogadas recebem `game:error` com `game_not_active`.
+- `game:rejoin` responde `game:start` com o estado atual. Se o adversário também estiver fora, vem em seguida `opponent:disconnected` com os segundos que restam a ele. O adversário presente recebe `opponent:reconnected` e o `game:state` retomado.
+- `game:rejoin` de uma partida terminada responde `game:start` e repete o `game:over`. Na sala privada que ainda espera o convidado, não há resposta: o criador volta a aguardar.
+- `game:rejoin` com sala inexistente ou token errado responde `room:error` com `invalid_token`. Outra aba com o mesmo token assume o assento.
+- Sem volta em 60 segundos, quem ficou vence com `game:over` e `disconnect`. Se os dois saírem, ou contra o bot, a partida é descartada.
+- A revanche chega como um novo `game:start`, na mesma sala, com os mesmos assentos e tokens. Contra o bot, começa no primeiro `game:rematch`. Se o adversário já saiu, quem pede recebe `opponent:left`.
