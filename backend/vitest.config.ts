@@ -12,7 +12,7 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['text', 'html', 'lcov', 'json-summary'],
       include: ['src/**/*.ts'],
-      exclude: ['src/server.ts', 'src/**/*.test.ts'],
+      exclude: ['src/server.ts', 'src/**/*.test.ts', 'src/**/testing.ts'],
       thresholds: {
         lines: 80,
         functions: 80,

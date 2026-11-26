@@ -23,7 +23,7 @@ export function sequence(...values: number[]) {
 export async function startGameServer(options: GameServerOptions) {
   const httpServer = createServer();
   const io: GameIo = new Server(httpServer);
-  attachGameServer(io, options);
+  const manager = attachGameServer(io, options);
   await new Promise<void>((resolve) => httpServer.listen(0, resolve));
   const { port } = httpServer.address() as AddressInfo;
   const clients: TestClient[] = [];
@@ -40,6 +40,7 @@ export async function startGameServer(options: GameServerOptions) {
     },
     async close() {
       for (const client of clients) client.disconnect();
+      manager.close();
       await io.close();
     },
   };
