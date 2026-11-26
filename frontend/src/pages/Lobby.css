@@ -31,7 +31,7 @@
 
 .lobby__paineis {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
   gap: var(--espaco-5) var(--espaco-4);
 }
 
@@ -43,6 +43,33 @@
 .lobby__paineis .botao {
   width: 100%;
   min-height: 3rem;
+}
+
+.lobby__codigo {
+  display: grid;
+  gap: var(--espaco-3);
+  margin-top: var(--espaco-4);
+  padding-top: var(--espaco-3);
+  border-top: var(--borda) dashed var(--cor-neutra);
+}
+
+.lobby__codigo label {
+  text-align: left;
+  color: var(--cor-texto-suave);
+}
+
+.lobby__codigo input {
+  width: 100%;
+  padding: var(--espaco-2) var(--espaco-3);
+  font: 1.5rem var(--fonte-titulo);
+  letter-spacing: 0.4em;
+  color: var(--cor-texto);
+  background: var(--cor-espaco);
+  border: var(--borda) solid var(--cor-contorno);
+}
+
+.lobby__codigo input::placeholder {
+  color: var(--cor-neutra);
 }
 
 .lobby__erro {

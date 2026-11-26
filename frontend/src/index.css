@@ -11,6 +11,7 @@
   --cor-jogador: #8ab4f0;
   --cor-jogador-sombra: #5a7fc0;
   --cor-adversario: #f08a5d;
+  --cor-sucesso: #a8d89a;
   --cor-perigo: #a83246;
   --cor-perigo-sombra: #7a2233;
   --cor-neutra: #4b4470;
@@ -110,6 +111,14 @@ main {
   background: var(--cor-perigo);
   box-shadow:
     inset 0 calc(-1 * var(--borda)) 0 var(--cor-perigo-sombra),
+    0 0 0 var(--borda) var(--cor-contorno);
+}
+
+.botao--neutro {
+  color: var(--cor-texto);
+  background: var(--cor-neutra);
+  box-shadow:
+    inset 0 calc(-1 * var(--borda)) 0 var(--cor-neutra-sombra),
     0 0 0 var(--borda) var(--cor-contorno);
 }
 

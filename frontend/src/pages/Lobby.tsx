@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { PainelBot } from '../components/PainelBot';
+import { PainelSala } from '../components/PainelSala';
 import { apelidoValido, salvarApelido, TAMANHO_APELIDO, useApelido } from '../hooks/useApelido';
 import { useBuscaDePartida } from '../hooks/useBuscaDePartida';
 import './Lobby.css';
@@ -13,7 +14,8 @@ const MENSAGENS_DA_FILA = {
 export function Lobby() {
   const salvo = useApelido();
   const [apelido, setApelido] = useState(salvo);
-  const { modo, fase, erro, entrarNaFila, jogarContraBot, cancelar } = useBuscaDePartida();
+  const { modo, fase, erro, entrarNaFila, jogarContraBot, criarSala, cancelar } =
+    useBuscaDePartida();
   const valido = apelidoValido(apelido);
 
   function aoDigitar(valor: string) {
@@ -85,6 +87,14 @@ export function Lobby() {
             </form>
           )}
         </section>
+
+        <PainelSala
+          aoCriar={() => criarSala(apelido.trim())}
+          andamento={modo === 'sala' ? 'Criando a sala...' : undefined}
+          aoCancelar={cancelar}
+          erro={erro?.modo === 'sala' ? erro.mensagem : undefined}
+          desabilitado={!valido}
+        />
       </div>
     </main>
   );

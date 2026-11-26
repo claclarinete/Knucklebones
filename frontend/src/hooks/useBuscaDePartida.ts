@@ -1,19 +1,21 @@
 import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
-import { salvarPartida } from '../services/partida';
+import { salvarPartida, type PartidaSalva } from '../services/partida';
 import { SocketContext } from '../services/SocketContext';
 import type { Difficulty, GameStart } from '../types/jogo';
 
-export type Modo = 'fila' | 'bot';
+export type Modo = 'fila' | 'bot' | 'sala';
 export type Fase = 'conectando' | 'enviando' | 'esperando';
 
 type Pedido =
   | { modo: 'fila'; evento: 'queue:join'; dados: { nickname?: string } }
-  | { modo: 'bot'; evento: 'room:create'; dados: { mode: 'bot'; difficulty: Difficulty; nickname?: string } };
+  | { modo: 'bot'; evento: 'room:create'; dados: { mode: 'bot'; difficulty: Difficulty; nickname?: string } }
+  | { modo: 'sala'; evento: 'room:create'; dados: { mode: 'online'; nickname?: string } };
 
 const FALHAS: Record<Modo, string> = {
   fila: 'Não foi possível entrar na fila. Tente de novo.',
   bot: 'Não foi possível começar a partida. Tente de novo.',
+  sala: 'Não foi possível criar a sala. Tente de novo.',
 };
 
 const comApelido = (apelido: string) => (apelido ? { nickname: apelido } : {});
@@ -41,7 +43,12 @@ export function useBuscaDePartida() {
     const aoComecar = (partida: GameStart) => {
       comecou = true;
       salvarPartida(partida);
-      navigate(`/partida/${partida.code}`, { state: partida });
+      navigate(`/partida/${partida.code}`, { state: { partida } });
+    };
+    const aoCriarSala = (sala: PartidaSalva) => {
+      if (pedido.modo !== 'sala') return;
+      salvarPartida(sala);
+      navigate(`/partida/${sala.code}`, { state: { criada: true } });
     };
     const aoFalhar = () => {
       setErro({ modo: pedido.modo, mensagem: FALHAS[pedido.modo] });
@@ -52,6 +59,7 @@ export function useBuscaDePartida() {
     socket.on('disconnect', aoDesconectar);
     socket.on('queue:waiting', aoEsperar);
     socket.on('game:start', aoComecar);
+    socket.on('room:created', aoCriarSala);
     socket.on('room:error', aoFalhar);
     if (socket.connected) aoConectar();
     else socket.connect();
@@ -61,6 +69,7 @@ export function useBuscaDePartida() {
       socket.off('disconnect', aoDesconectar);
       socket.off('queue:waiting', aoEsperar);
       socket.off('game:start', aoComecar);
+      socket.off('room:created', aoCriarSala);
       socket.off('room:error', aoFalhar);
       // Cobre o botão Cancelar, a troca de modo e a saída do lobby.
       if (pedido.modo === 'fila' && !comecou && socket.connected) socket.emit('queue:leave');
@@ -87,6 +96,9 @@ export function useBuscaDePartida() {
         evento: 'room:create',
         dados: { mode: 'bot', difficulty, ...comApelido(apelido) },
       });
+    },
+    criarSala(apelido: string) {
+      pedir({ modo: 'sala', evento: 'room:create', dados: { mode: 'online', ...comApelido(apelido) } });
     },
     cancelar() {
       setPedido(null);

@@ -207,4 +207,46 @@ describe('Lobby', () => {
 
     expect(screen.getByRole('alert')).toHaveTextContent('Não foi possível começar a partida');
   });
+
+  it('cria uma sala privada e abre a espera', async () => {
+    const { socket } = abrirLobby();
+    await userEvent.click(screen.getByRole('button', { name: 'Criar sala' }));
+    expect(socket.enviados).toEqual([['room:create', { mode: 'online' }]]);
+
+    act(() => socket.receber('room:created', { code: 'K7P2QX', playerToken: 'segredo' }));
+
+    expect(screen.getByRole('heading', { name: 'Tela da partida' })).toBeInTheDocument();
+    expect(sessionStorage.getItem(CHAVE_PARTIDA)).toContain('segredo');
+  });
+
+  it('só permite entrar com o código completo, em maiúsculas', async () => {
+    abrirLobby();
+    const campo = screen.getByLabelText('Código da sala');
+    const entrar = screen.getByRole('button', { name: 'Entrar' });
+
+    await userEvent.type(campo, 'k7p2q');
+    expect(entrar).toBeDisabled();
+    await userEvent.type(campo, 'x');
+
+    expect(campo).toHaveValue('K7P2QX');
+    expect(entrar).toBeEnabled();
+  });
+
+  it('descarta caracteres que não existem nos códigos', async () => {
+    abrirLobby();
+    const campo = screen.getByLabelText('Código da sala');
+
+    await userEvent.type(campo, 'a0o1i-b');
+
+    expect(campo).toHaveValue('AB');
+  });
+
+  it('entrar pelo código abre o endereço da sala', async () => {
+    abrirLobby();
+
+    await userEvent.type(screen.getByLabelText('Código da sala'), 'K7P2QX');
+    await userEvent.click(screen.getByRole('button', { name: 'Entrar' }));
+
+    expect(screen.getByRole('heading', { name: 'Tela da partida' })).toBeInTheDocument();
+  });
 });
