@@ -78,15 +78,6 @@ describe('room:create contra o bot', () => {
     expect((await startBotGame(client)).state.status).toBe('playing');
   });
 
-  it('ainda não cria salas online, que chegam na US08 (#12)', async () => {
-    const client = await connectTo({ botDelayMs: 0 });
-
-    const error = nextEvent(client, 'room:error');
-    client.emit('room:create', { mode: 'online' });
-
-    expect(await error).toEqual({ reason: 'invalid_payload' });
-  });
-
   it('quando o bot começa, ele joga primeiro', async () => {
     const client = await connectTo({ botDelayMs: 0, rng: sequence(BOT_STARTS, forDie(2)) });
     const firstState = nextEvent(client, 'game:state');

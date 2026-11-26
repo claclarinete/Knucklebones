@@ -7,7 +7,7 @@ import type {
   SocketData,
 } from './events.js';
 import { type Client, GameManager, type GameManagerOptions } from './manager.js';
-import { gameMoveSchema, roomCreateSchema } from './schemas.js';
+import { gameMoveSchema, roomCreateSchema, roomJoinSchema } from './schemas.js';
 
 export type GameIo = Server<ClientToServerEvents, ServerToClientEvents, object, SocketData>;
 type GameSocket = Socket<ClientToServerEvents, ServerToClientEvents, object, SocketData>;
@@ -40,11 +40,22 @@ export function attachGameServer(io: GameIo, options: GameServerOptions): GameMa
     socket.on(
       'room:create',
       validated(roomCreateSchema, roomError, (payload) => {
-        // Salas privadas online chegam na US08 (#12).
-        if (payload.mode !== 'bot') return roomError();
-        manager.createBotRoom(client, payload.difficulty, payload.nickname);
+        if (payload.mode === 'bot') {
+          manager.createBotRoom(client, payload.difficulty, payload.nickname);
+        } else {
+          manager.createPrivateRoom(client, payload.nickname);
+        }
       }),
     );
+
+    socket.on(
+      'room:join',
+      validated(roomJoinSchema, roomError, ({ code, nickname }) =>
+        manager.joinRoom(client, code, nickname),
+      ),
+    );
+
+    socket.on('room:cancel', () => manager.cancelRoom(client));
 
     socket.on(
       'game:move',

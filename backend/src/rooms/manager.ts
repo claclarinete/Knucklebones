@@ -35,9 +35,12 @@ export interface GameManagerOptions {
   botDelayMs: number;
   /** Tempo que uma partida terminada fica guardada. */
   finishedRoomTtlMs?: number;
+  /** Tempo que uma sala privada espera o convidado. */
+  waitingRoomTtlMs?: number;
 }
 
 const FIVE_MINUTES = 5 * 60 * 1000;
+const TEN_MINUTES = 10 * 60 * 1000;
 const PLAYER_IDS: readonly PlayerId[] = ['p1', 'p2'];
 
 interface Seat {
@@ -51,10 +54,18 @@ interface Seat {
 interface Room {
   code: string;
   difficulty?: Difficulty;
-  seats: Record<PlayerId, Seat>;
-  state: GameState;
-  /** Jogada do bot ou remoção da partida terminada. */
+  /** O p2 fica vazio enquanto a sala privada espera o convidado. */
+  seats: { p1: Seat; p2?: Seat };
+  /** `null` enquanto a partida não começou. */
+  state: GameState | null;
+  /** Expiração da sala em espera, jogada do bot ou remoção da partida terminada. */
   timer?: NodeJS.Timeout;
+}
+
+type StartedRoom = Room & { seats: Record<PlayerId, Seat>; state: GameState };
+
+function hasStarted(room: Room): room is StartedRoom {
+  return room.state !== null;
 }
 
 function toGameError(reason: MoveError): GameErrorReason {
@@ -69,6 +80,7 @@ export class GameManager {
   private readonly rng: Rng;
   private readonly botDelayMs: number;
   private readonly finishedRoomTtlMs: number;
+  private readonly waitingRoomTtlMs: number;
   private readonly rooms = new Map<string, Room>();
   /** Sala de cada cliente conectado que ocupa um assento. */
   private readonly roomOfClient = new Map<string, string>();
@@ -77,6 +89,7 @@ export class GameManager {
     this.rng = options.rng ?? Math.random;
     this.botDelayMs = options.botDelayMs;
     this.finishedRoomTtlMs = options.finishedRoomTtlMs ?? FIVE_MINUTES;
+    this.waitingRoomTtlMs = options.waitingRoomTtlMs ?? TEN_MINUTES;
   }
 
   createBotRoom(client: Client, difficulty: Difficulty, nickname?: string) {
@@ -91,9 +104,43 @@ export class GameManager {
     this.startGame(room);
   }
 
+  /** Cria uma sala privada e espera o convidado entrar pelo código. */
+  createPrivateRoom(client: Client, nickname?: string) {
+    this.leave(client);
+    const host = this.humanSeat(client, nickname);
+    const room = this.addRoom({ seats: { p1: host } });
+    this.schedule(room, this.waitingRoomTtlMs, () => {
+      room.seats.p1.client?.emit('room:error', { reason: 'not_found' });
+      this.removeRoom(room);
+    });
+    client.emit('room:created', { code: room.code, playerToken: host.token! });
+  }
+
+  /** Entra numa sala privada pelo código e começa a partida. */
+  joinRoom(client: Client, code: string, nickname?: string) {
+    const room = this.rooms.get(code);
+    if (!room) return client.emit('room:error', { reason: 'not_found' });
+    if (room.seats.p2 || room.seats.p1.client?.id === client.id) {
+      return client.emit('room:error', { reason: 'full' });
+    }
+
+    this.leave(client);
+    room.seats.p2 = this.humanSeat(client, nickname);
+    this.roomOfClient.set(client.id, room.code);
+    this.startGame(room);
+  }
+
+  /** O criador desiste da sala que ainda espera o convidado. */
+  cancelRoom(client: Client) {
+    const found = this.seatOf(client);
+    if (found?.player === 'p1' && !hasStarted(found.room)) this.removeRoom(found.room);
+  }
+
   move(client: Client, column: number) {
     const found = this.seatOf(client);
-    if (!found) return client.emit('game:error', { reason: 'game_not_active' });
+    if (!found || !hasStarted(found.room)) {
+      return client.emit('game:error', { reason: 'game_not_active' });
+    }
 
     const result = applyMove(found.room.state, found.player, column, this.rng);
     if (!result.ok) return client.emit('game:error', { reason: toGameError(result.reason) });
@@ -115,9 +162,9 @@ export class GameManager {
 
   private addRoom(room: Omit<Room, 'code' | 'state'>): Room {
     const code = generateRoomCode((candidate) => this.rooms.has(candidate));
-    const created: Room = { ...room, code, state: createGame(this.rng) };
+    const created: Room = { ...room, code, state: null };
     this.rooms.set(code, created);
-    for (const seat of Object.values(created.seats)) {
+    for (const seat of this.seatsOf(created)) {
       if (seat.client) this.roomOfClient.set(seat.client.id, code);
     }
     return created;
@@ -125,10 +172,14 @@ export class GameManager {
 
   private removeRoom(room: Room) {
     clearTimeout(room.timer);
-    for (const seat of Object.values(room.seats)) {
+    for (const seat of this.seatsOf(room)) {
       if (seat.client) this.roomOfClient.delete(seat.client.id);
     }
     this.rooms.delete(room.code);
+  }
+
+  private seatsOf(room: Room): Seat[] {
+    return room.seats.p2 ? [room.seats.p1, room.seats.p2] : [room.seats.p1];
   }
 
   /** Sai da partida atual, se houver, antes de começar outra. */
@@ -140,11 +191,11 @@ export class GameManager {
   private seatOf(client: Client): { room: Room; player: PlayerId } | undefined {
     const code = this.roomOfClient.get(client.id);
     const room = code === undefined ? undefined : this.rooms.get(code);
-    const player = PLAYER_IDS.find((id) => room?.seats[id].client?.id === client.id);
+    const player = PLAYER_IDS.find((id) => room?.seats[id]?.client?.id === client.id);
     return room && player ? { room, player } : undefined;
   }
 
-  private startPayload(room: Room, player: PlayerId, token: string): GameStartPayload {
+  private startPayload(room: StartedRoom, player: PlayerId, token: string): GameStartPayload {
     return {
       code: room.code,
       playerToken: token,
@@ -154,12 +205,17 @@ export class GameManager {
     };
   }
 
+  /** Começa (ou recomeça) a partida. Só é chamada com os dois assentos ocupados. */
   private startGame(room: Room) {
+    clearTimeout(room.timer);
+    room.state = createGame(this.rng);
+    const started = room as StartedRoom;
+
     for (const player of PLAYER_IDS) {
-      const { client, token } = room.seats[player];
-      if (client && token) client.emit('game:start', this.startPayload(room, player, token));
+      const { client, token } = started.seats[player];
+      if (client && token) client.emit('game:start', this.startPayload(started, player, token));
     }
-    this.scheduleBotIfNeeded(room);
+    this.scheduleBotIfNeeded(started);
   }
 
   private broadcast<E extends keyof ServerToClientEvents>(
@@ -167,7 +223,7 @@ export class GameManager {
     event: E,
     ...args: Parameters<ServerToClientEvents[E]>
   ) {
-    for (const seat of Object.values(room.seats)) seat.client?.emit(event, ...args);
+    for (const seat of this.seatsOf(room)) seat.client?.emit(event, ...args);
   }
 
   private schedule(room: Room, delayMs: number, task: () => void) {
@@ -176,7 +232,7 @@ export class GameManager {
     room.timer.unref?.();
   }
 
-  private updateState(room: Room, state: GameState) {
+  private updateState(room: StartedRoom, state: GameState) {
     room.state = state;
     this.broadcast(room, 'game:state', { state });
 
@@ -187,7 +243,7 @@ export class GameManager {
     this.schedule(room, this.finishedRoomTtlMs, () => this.removeRoom(room));
   }
 
-  private scheduleBotIfNeeded(room: Room) {
+  private scheduleBotIfNeeded(room: StartedRoom) {
     const { difficulty, state } = room;
     if (!difficulty || state.status !== 'playing' || room.seats[state.currentPlayer].token) return;
 
