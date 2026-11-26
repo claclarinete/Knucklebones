@@ -1,0 +1,41 @@
+name: Verificação de produção
+
+on:
+  schedule:
+    - cron: '0 12 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verificar:
+    name: Conferir os endereços publicados
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      # As variáveis do repositório, quando definidas, substituem os endereços atuais.
+      BACKEND_URL: ${{ vars.BACKEND_URL || 'https://knucklebones-backend-b20z.onrender.com' }}
+      FRONTEND_URL: ${{ vars.FRONTEND_URL || 'https://knucklebones-frontend.onrender.com' }}
+    steps:
+      - name: Backend responde no /health e libera o frontend
+        # As tentativas cobrem o tempo que o plano gratuito leva para acordar.
+        run: |
+          resposta=$(curl --fail --silent --show-error --include --retry 6 --retry-delay 15 \
+            --retry-all-errors --max-time 60 --header "Origin: $FRONTEND_URL" "$BACKEND_URL/health") \
+            || { echo "::error::Falha no backend: $BACKEND_URL/health"; exit 1; }
+          grep -q '"status":"ok"' <<< "$resposta" \
+            || { echo "::error::Resposta inesperada do /health"; exit 1; }
+          # Compara a linha inteira, para um endereço parecido não passar.
+          tr -d '\r' <<< "$resposta" | grep -qixF "access-control-allow-origin: $FRONTEND_URL" \
+            || { echo "::error::O CORS não libera $FRONTEND_URL"; exit 1; }
+
+      - name: Frontend abre a página inicial e uma rota interna
+        if: ${{ !cancelled() }}
+        run: |
+          for caminho in / /regras; do
+            pagina=$(curl --fail --silent --show-error --retry 3 --retry-all-errors --max-time 30 "$FRONTEND_URL$caminho") \
+              || { echo "::error::Falha no frontend: $FRONTEND_URL$caminho"; exit 1; }
+            grep -q 'Knucklebones Online' <<< "$pagina" \
+              || { echo "::error::Página inesperada em $FRONTEND_URL$caminho"; exit 1; }
+          done
