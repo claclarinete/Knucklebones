@@ -11,6 +11,8 @@
   --cor-jogador: #8ab4f0;
   --cor-jogador-sombra: #5a7fc0;
   --cor-adversario: #f08a5d;
+  --cor-perigo: #a83246;
+  --cor-perigo-sombra: #7a2233;
   --cor-neutra: #4b4470;
   --cor-neutra-sombra: #35305a;
   --cor-mesa: #5a3a3a;
@@ -94,6 +96,37 @@ main {
     inset 0 calc(-1 * var(--borda)) 0 var(--cor-destaque-sombra),
     0 0 0 var(--borda) var(--cor-contorno);
   cursor: pointer;
+}
+
+.botao--jogador {
+  background: var(--cor-jogador);
+  box-shadow:
+    inset 0 calc(-1 * var(--borda)) 0 var(--cor-jogador-sombra),
+    0 0 0 var(--borda) var(--cor-contorno);
+}
+
+.botao--perigo {
+  color: var(--cor-texto);
+  background: var(--cor-perigo);
+  box-shadow:
+    inset 0 calc(-1 * var(--borda)) 0 var(--cor-perigo-sombra),
+    0 0 0 var(--borda) var(--cor-contorno);
+}
+
+.botao:disabled {
+  cursor: not-allowed;
+  filter: grayscale(0.7) brightness(0.8);
+}
+
+.painel__titulo {
+  /* Ocupa só a largura do texto e fica centralizado sobre a borda de cima do painel. */
+  display: table;
+  margin: calc(-1 * var(--espaco-5) - 1.25rem) auto var(--espaco-4);
+  padding: var(--espaco-2) var(--espaco-4);
+  font-size: 1.125rem;
+  color: var(--cor-barra);
+  background: var(--cor-jogador);
+  box-shadow: 0 0 0 var(--borda) var(--cor-contorno);
 }
 
 .so-leitor {

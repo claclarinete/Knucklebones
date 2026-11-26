@@ -13,7 +13,7 @@ function renderAt(path: string) {
 
 describe('rotas', () => {
   it.each([
-    ['/', 'Lobby'],
+    ['/', 'Olá, visitante!'],
     ['/regras', 'Regras'],
   ])('%s mostra a página %s', (path, title) => {
     renderAt(path);

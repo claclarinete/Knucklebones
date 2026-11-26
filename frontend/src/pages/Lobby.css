@@ -1,0 +1,65 @@
+.lobby h1 {
+  margin: 0;
+  text-shadow: 0 4px 0 var(--cor-contorno);
+  overflow-wrap: anywhere;
+}
+
+.lobby__chamada {
+  margin: var(--espaco-2) 0 var(--espaco-5);
+  font-size: 1.25rem;
+  color: var(--cor-texto-suave);
+}
+
+.lobby__painel {
+  margin-top: var(--espaco-5);
+}
+
+.lobby__painel label {
+  display: block;
+  margin-bottom: var(--espaco-2);
+  text-align: left;
+  color: var(--cor-texto-suave);
+}
+
+.lobby__painel input {
+  width: 100%;
+  margin-bottom: var(--espaco-4);
+  padding: var(--espaco-2) var(--espaco-3);
+  font: 1.25rem var(--fonte-texto);
+  color: var(--cor-texto);
+  background: var(--cor-espaco);
+  border: var(--borda) solid var(--cor-contorno);
+}
+
+.lobby__painel .botao {
+  width: 100%;
+  min-height: 3rem;
+}
+
+.lobby__erro {
+  margin-top: calc(-1 * var(--espaco-3));
+  color: var(--cor-adversario);
+}
+
+.lobby__ampulheta {
+  display: block;
+  margin: 0 auto;
+  width: 1.5rem;
+  height: 2.5rem;
+  background: var(--cor-destaque);
+  clip-path: polygon(0 0, 100% 0, 100% 10%, 60% 50%, 100% 90%, 100% 100%, 0 100%, 0 90%, 40% 50%, 0 10%);
+  animation: virar 2s steps(8) infinite;
+}
+
+@keyframes virar {
+  50%,
+  100% {
+    transform: rotate(180deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lobby__ampulheta {
+    animation: none;
+  }
+}
