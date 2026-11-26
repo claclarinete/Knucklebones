@@ -30,3 +30,13 @@ export function placeDie(board: Board, column: Column, die: Die): Board {
   }
   return board.map((dice, index) => (index === column ? [...dice, die] : [...dice])) as Board;
 }
+
+/**
+ * Devolve um novo tabuleiro sem os dados de valor `die` na coluna informada.
+ * Os dados restantes mantêm a ordem, sem buracos. As outras colunas não mudam.
+ */
+export function removeMatching(board: Board, column: Column, die: Die): Board {
+  return board.map((dice, index) =>
+    index === column ? dice.filter((value) => value !== die) : [...dice],
+  ) as Board;
+}

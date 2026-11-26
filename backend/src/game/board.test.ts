@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { createBoard, isBoardFull, isColumnFull, isValidColumn, placeDie } from './board.js';
+import {
+  createBoard,
+  isBoardFull,
+  isColumnFull,
+  isValidColumn,
+  placeDie,
+  removeMatching,
+} from './board.js';
 import type { Board } from './types.js';
 
 describe('createBoard', () => {
@@ -58,5 +65,31 @@ describe('isBoardFull', () => {
 
   it('é verdadeiro com as 9 posições ocupadas', () => {
     expect(isBoardFull([[1, 2, 3], [4, 5, 6], [1, 2, 3]])).toBe(true);
+  });
+});
+
+describe('removeMatching', () => {
+  it('remove todos os dados iguais da coluna', () => {
+    expect(removeMatching([[4, 4, 4], [], []], 0, 4)).toEqual([[], [], []]);
+  });
+
+  it('não afeta as outras colunas', () => {
+    expect(removeMatching([[4], [4, 4], [4]], 1, 4)).toEqual([[4], [], [4]]);
+  });
+
+  it('reorganiza os dados restantes sem buracos, mantendo a ordem', () => {
+    expect(removeMatching([[3, 5, 3], [], []], 0, 3)).toEqual([[5], [], []]);
+  });
+
+  it('mantém a coluna quando não há dados iguais', () => {
+    expect(removeMatching([[1, 2], [], []], 0, 6)).toEqual([[1, 2], [], []]);
+  });
+
+  it('não altera o tabuleiro recebido', () => {
+    const board: Board = [[4, 2], [], []];
+
+    removeMatching(board, 0, 4);
+
+    expect(board).toEqual([[4, 2], [], []]);
   });
 });
