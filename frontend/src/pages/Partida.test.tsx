@@ -7,6 +7,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { CHAVE_APELIDO } from '../hooks/useApelido';
 import { CHAVE_PARTIDA, salvarPartida } from '../services/partida';
 import { SocketContext } from '../services/SocketContext';
+import { criarPartida } from '../test/partida';
 import { criarSocketFalso } from '../test/socketFalso';
 import { Partida } from './Partida';
 
@@ -71,9 +72,9 @@ describe('sala de espera', () => {
   it('começa a partida quando o convidado entra', () => {
     const socket = abrirComoCriador();
 
-    act(() => socket.receber('game:start', SALA));
+    act(() => socket.receber('game:start', criarPartida()));
 
-    expect(screen.getByRole('status')).toHaveTextContent('Partida iniciada');
+    expect(screen.getByRole('group', { name: 'Seu tabuleiro' })).toBeInTheDocument();
   });
 
   it('cancelar fecha a sala e volta ao lobby', async () => {

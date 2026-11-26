@@ -1,0 +1,107 @@
+.partida {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 17rem;
+  align-items: start;
+  gap: var(--espaco-5) var(--espaco-4);
+}
+
+.partida__topo {
+  display: flex;
+  grid-column: 1 / -1;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--espaco-3);
+}
+
+.partida__topo p {
+  margin: 0;
+  padding: var(--espaco-2) var(--espaco-3);
+  background: var(--cor-barra);
+  box-shadow: 0 0 0 var(--borda) var(--cor-contorno);
+}
+
+.partida__modo {
+  color: var(--cor-texto-suave);
+}
+
+.partida__vez {
+  font: 700 1.25rem var(--fonte-titulo);
+}
+
+.partida__topo .partida__vez--minha {
+  color: var(--cor-barra);
+  background: var(--cor-destaque);
+}
+
+.mesa {
+  display: grid;
+  gap: var(--espaco-3);
+  justify-items: center;
+  padding: var(--espaco-3);
+  background: var(--cor-mesa);
+  box-shadow: 0 0 0 var(--borda) var(--cor-contorno);
+}
+
+.jogador {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-2);
+  margin: 0;
+  font-size: 1.25rem;
+  overflow-wrap: anywhere;
+}
+
+.jogador__avatar {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  font-family: var(--fonte-titulo);
+  color: var(--cor-barra);
+  background: var(--cor-adversario);
+  box-shadow: 0 0 0 var(--borda) var(--cor-contorno);
+}
+
+.jogador--voce .jogador__avatar {
+  background: var(--cor-jogador);
+}
+
+.mesa__divisor {
+  margin: 0;
+  padding: 0 var(--espaco-3);
+  font-family: var(--fonte-titulo);
+  color: var(--cor-barra);
+  background: var(--cor-destaque);
+}
+
+.dado-da-vez {
+  width: 100%;
+}
+
+.dado-da-vez .dado {
+  --lado: 5.5rem;
+
+  margin: 0 auto;
+}
+
+.dado-da-vez__erro {
+  color: var(--cor-adversario);
+}
+
+@media (max-width: 48rem) {
+  .partida {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* No celular o dado vem antes da mesa, para ficar visível na hora de escolher. */
+  .dado-da-vez {
+    order: -1;
+    padding-bottom: var(--espaco-3);
+  }
+
+  .partida__topo {
+    order: -2;
+  }
+}

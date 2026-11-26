@@ -1,6 +1,6 @@
 .tabuleiro {
   /* Diminui em telas estreitas para as três colunas caberem sem rolagem. */
-  --lado: min(4.375rem, 17vw);
+  --lado: max(2.75rem, min(4.375rem, 17vw, 8vh));
 
   display: flex;
   justify-content: center;
@@ -16,6 +16,28 @@
   list-style: none;
   background: var(--cor-coluna);
   box-shadow: 0 0 0 var(--borda) var(--cor-contorno);
+}
+
+.coluna-area {
+  position: relative;
+}
+
+.coluna__jogar {
+  position: absolute;
+  inset: 0;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.coluna__jogar:disabled {
+  cursor: default;
+}
+
+.coluna__jogar:enabled:hover,
+.coluna__jogar:enabled:focus-visible {
+  background: rgb(255 207 107 / 15%);
+  box-shadow: 0 0 0 var(--borda) var(--cor-destaque);
 }
 
 .coluna--invertida {

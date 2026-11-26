@@ -1,4 +1,5 @@
 import { Link, useParams } from 'react-router';
+import { MesaDeJogo } from '../components/MesaDeJogo';
 import { SalaDeEspera } from '../components/SalaDeEspera';
 import { useSala, type MotivoDeErro } from '../hooks/useSala';
 import { limparCodigo } from '../services/codigo';
@@ -35,13 +36,20 @@ function SalaDaPartida({ code }: { code: string }) {
     );
   }
 
-  // O tabuleiro e as jogadas entram com a tela da partida.
+  if (sala.fase === 'jogando') {
+    return (
+      <main>
+        <MesaDeJogo partida={sala.partida} />
+      </main>
+    );
+  }
+
   return (
     <main>
       <section className="painel">
         <h1>Partida</h1>
         <p>Sala {code}</p>
-        <p role="status">{sala.fase === 'entrando' ? 'Entrando na sala...' : 'Partida iniciada!'}</p>
+        <p role="status">Entrando na sala...</p>
         <Link to="/" className="botao">
           Voltar para o lobby
         </Link>

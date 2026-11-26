@@ -4,7 +4,8 @@
   place-items: center;
   width: var(--lado, 4.375rem);
   height: var(--lado, 4.375rem);
-  padding: 10%;
+  /* Relativo ao próprio dado: em %, o preenchimento seguiria a largura do elemento pai. */
+  padding: calc(var(--lado, 4.375rem) * 0.1);
   background: var(--cor-dado);
   box-shadow:
     inset 3px 3px 0 var(--cor-dado-luz),
